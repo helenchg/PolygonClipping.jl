@@ -14,10 +14,24 @@ type Vertex
     Vertex(x) = new(x, None, None, None, false, false, None, 0.0)
 end
 
+################################################################################
+#
+# Polygon:
+#   start
+#   finish
+#
+# Push!(Polygon, Vertex)
+#   Notes:
+#   For cleaner implmentation, the last Vertex always points to a vertex with
+#   the same location as the start vertex
+#
+################################################################################
+
 type Polygon
     start
+    finish
 
-    Polygon() = new(None)
+    Polygon() = new(None, None)
 end
 
 function show(io::IO, p::Polygon)
@@ -33,13 +47,15 @@ end
 function push!(p::Polygon, v::Vertex)
     if p.start == None
         p.start = v
+        p.finish = v
+        close = Vertex(v.location)
+        close.prev = v
+        p.start.next = close
     else
-        tail = p.start
-        while tail.next != None
-            tail = tail.next
-        end
-        v.prev = tail
-        tail.next = v
+        v.next = p.finish.next
+        v.prev = p.finish
+        p.finish.next = v
+        p.finish = v
     end
 end
 

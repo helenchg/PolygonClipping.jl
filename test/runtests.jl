@@ -2,18 +2,23 @@ using GreinerHormann
 using Base.Test
 
 # Test Doubly linked list
-println("Testing doubly linked list...")
+println("Testing Polygon Structure...")
 poly = Polygon()
+vert1 = Vertex([1,2])
+push!(poly, vert1)
 for i = 1:10
     push!(poly, Vertex(rand(2)))
 end
 vert1 = poly.start
 vert2 = vert1.next
-for i = 1:9
+for i = 1:10
     @test vert1 === vert2.prev
     vert1 = vert1.next
     vert2 = vert2.next
 end
+# test we close the polygon and terminate with None
+@test poly.start.location == poly.finish.next.location
+@test poly.finish.next.next == None
 
 println("Testing vertex constructors...")
 vert1 = Vertex([0,0])
