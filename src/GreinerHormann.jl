@@ -43,6 +43,16 @@ function push!(p::Polygon, v::Vertex)
     end
 end
 
+function Vertex(s::Vertex, c::Vertex, alpha)
+    # Insert a vertex between s and c at alpha from s
+    location = s.location + alpha*(c.location-s.location)
+    a = Vertex(location)
+    s.next = a
+    c.prev = a
+    a.next = c
+    a.prev = s
+    return a
+end
 
 export Vertex, Polygon, push!
 end # module
