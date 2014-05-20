@@ -10,9 +10,9 @@ type Vertex
     intersect::Bool
     entry::Bool
     neighbor
-    alpha::Float64
+    visited::Bool
 
-    Vertex(x) = new(x, None, None, None, false, true, None, 0.0)
+    Vertex(x) = new(x, None, None, None, false, true, None, false)
 end
 
 ################################################################################
@@ -49,7 +49,7 @@ function show(io::IO, p::Polygon)
         println("\tNeighbor:",pointer_from_objref(vert.neighbor))
         println("\tIntersect:",vert.intersect)
         println("\tEntry:",vert.entry)
-        println("\tAlpha:",vert.alpha)
+        println("\tVisited:",vert.visited)
         i = i + 1
         vert = vert.next
     end
