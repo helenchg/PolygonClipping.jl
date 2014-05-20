@@ -45,12 +45,25 @@ push!(poly1, Vertex([1,1]))
 push!(poly1, Vertex([0,1]))
 @test isinside(Vertex([0.5,0.5]), poly1) == true
 @test isinside(Vertex([-0.5,0.5]), poly1) == false
+for i = 1:100
+    @test isinside(Vertex(rand(2)), poly1) == true
+end
 
-# add self intersections
-push!(poly1, Vertex([0.5,0.5]))
-@test isinside(Vertex([0.4,0.5]), poly1) == false
-@test isinside(Vertex([0.75,0.75]), poly1) == true
-@test isinside(Vertex([0.75,0.25]), poly1) == true
+# add non-convexity
+push!(poly1, Vertex([0.9,0.5]))
+@test isinside(Vertex([0.9,0.9]), poly1) == true
+@test isinside(Vertex([0.9,0.9]), poly1) == true
+@test isinside(Vertex([0.99,0.1]), poly1) == true
+@test isinside(Vertex([0.5,0.5]), poly1) == false
+# the test below is an edge case we don't handle yet
+#@test isinside(Vertex([0.9,0.1]), poly1) == true
+
+# add self-intersection
+push!(poly1, Vertex([1.1, 0.25]))
+@test isinside(Vertex([1.09,0.24]), poly1) == true
+@test isinside(Vertex([1.09,0.26]), poly1) == true
+@test isinside(Vertex([0.9,0.25]), poly1) == false
+
 
 
 poly2 = Polygon()

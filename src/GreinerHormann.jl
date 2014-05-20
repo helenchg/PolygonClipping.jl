@@ -81,32 +81,42 @@ function Vertex(s::Vertex, c::Vertex, alpha)
 end
 
 function isinside(v::Vertex, p::Polygon)
-    # See: http://www.ecse.rpi.edu/~wrf/Research/Short_Notes/pnpoly.html
-    test = v.location
-    vert = p.start
-    locs = Array{Float64}[]
-    nvert = 0
-    while vert.next != None
-        println(vert.location)
-        push!(locs, vert.location)
-        nvert = nvert + 1
-        vert = vert.next
-    end
-    # Close polygon
-    push!(locs, vert.location)
-    i = 1
-    j = nvert
+    # See: http://www.sciencedirect.com/science/article/pii/S0925772101000128
+    # "The point in polygon problem for arbitrary polygons"
+    # An implementation of Hormann-Agathos (2001) Point in Polygon algorithm
     c = false
-   # println(locs)
-    while i < nvert
-   #     println("i:",i)
-   #     println("j:",j)
-        if ( ((locs[i][2]>test[2]) != (locs[j][2]>test[2])) &&
-            (test[1] < (locs[j][1]-locs[i][1]) * (test[2]-locs[i][2]) / (locs[j][2]-locs[i][2]) + locs[i][1]) )
-            c = !c
+    r = v.location
+    q1 = p.start
+    if q1.location == r
+        error("Vertex case")
+        return
+    end
+    q2 = q1.next
+    while q2 != None
+        if q2.location[2] == r[2]
+            if q2.location[1] == r[1]
+                error("Vertex case")
+                return
+            elseif (q1.location[2] == r[2]) && ((q2.location[1] > r[1]) == (q1.location[1] < r[1]))
+                error("Edge case")
+                return
+            end
         end
-        j = i
-        i = i + 1
+        if (q1.location[2] < r[2]) != (q2.location[2] < r[2])
+            if q1.location[1] >= r[1]
+                if q2.location[1] > r[1]
+                    c = !c
+                elseif ((det([q1.location q2.location]) > 0) == (q2.location[2] > q1.location[2]))
+                    c = !c
+                end
+            elseif q2.location[1] > r[1]
+                if ((det([q1.location q2.location]) > 0) == (q2.location[2] > q1.location[2]))
+                    c = !c
+                end
+            end
+        end
+        q1 = q1.next
+        q2 = q2.next
     end
     return c
 end
@@ -187,5 +197,5 @@ function intersection(sv, svn, cv, cvn)
 end
 
 
-export Vertex, Polygon, push!, clip, intersection, isinside
+export Vertex, Polygon, push!, clip, intersection, isinside, show
 end # module
