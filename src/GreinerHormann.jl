@@ -69,6 +69,7 @@ function push!(p::Polygon, v::Vertex)
         p.finish.next = v
         p.finish = v
     end
+    println("added :", v.location)
 end
 
 function Vertex(s::Vertex, c::Vertex, alpha)
@@ -197,6 +198,9 @@ function clip(subject::Polygon, clip::Polygon)
         cv = cv.next
     end
 
+    println(subject)
+    println(clip)
+
     # phase 3
     results = Polygon[]
     numpoly = 1
@@ -215,15 +219,25 @@ function clip(subject::Polygon, clip::Polygon)
         start = current.location
         println(current.location)
         while true
-            println(current.location)
+            println("Skip:", current.location)
             if current.entry
+                current = current.next
+                println("Next:",current.location)
+                push!(results[numpoly], Vertex(current.location))
+                current.visited = true
                 while !current.intersect
+                    println("Next loop:",current.location)
                     current = current.next
                     push!(results[numpoly], Vertex(current.location))
                     current.visited = true
                 end
             else
+                current = current.prev
+                println("Prev:",current.location)
+                push!(results[numpoly], Vertex(current.location))
+                current.visited = true
                 while !current.intersect
+                    println("Prev:",current.location)
                     current = current.prev
                     push!(results[numpoly], Vertex(current.location))
                     current.visited = true
@@ -231,8 +245,12 @@ function clip(subject::Polygon, clip::Polygon)
             end
             current.visited = true
             current = current.neighbor
-            if current.location == results[numpoly].start.location
+            println("loop:", current.location)
+            if current.location == start
                 break
+            else
+                current.visited = true
+                current = current.neighbor
             end
         end
         numpoly = numpoly + 1
@@ -258,7 +276,7 @@ function intersection(sv, svn, cv, cvn)
     b = ((s2[1] - s1[1]) * (s1[2] - c1[2]) - (s2[2] - s1[2]) * (s1[1] - c1[1])) / den
 
     if ((a == 1 || a == 0) && (0 <= b <= 1)) || ((b == 1 || b == 0) && (0 <= a <= 1))
-        error("Degenerate case")
+        error("Degenerate case between:", s1, s2, " and ", c1, c2, " got a:", a, " b:", b)
         return false, 0, 0
     elseif (0 < a < 1) && (0 < b < 1)
         return true, a, b
