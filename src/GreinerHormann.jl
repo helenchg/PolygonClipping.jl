@@ -140,10 +140,7 @@ function clip(subject::Polygon, clip::Polygon)
     while sv.next != None
         cv = clip.start
         while cv.next != None
-            println("finding intersection")
             intersect, a, b = intersection(sv, sv.next, cv, cv.next)
-            println(sv.location, sv.next.location, " to ", cv.location, cv.next.location)
-            println(intersect, " ", a, " ", b)
             if intersect
                 i1 = Vertex(sv, sv.next, a)
                 i2 = Vertex(cv, cv.next, b)
@@ -165,39 +162,85 @@ function clip(subject::Polygon, clip::Polygon)
 
     # Phase 2
     status = false
-    if isinside(subject.start, clip)
+    sv = subject.start
+    if isinside(sv, clip)
         println("subject Is inside")
         status = false
     else
         status = true
     end
-    sv = subject.start
     while sv != None
         if sv.intersect
             sv.entry = status
             status = !status
+        else
+            sv.entry = status
         end
         sv = sv.next
     end
 
     status = false
-    if isinside(clip.start, subject)
+    cv = clip.start
+    if isinside(cv, subject)
         println("clip Is inside")
         status = false
     else
         status = true
     end
-    cv = clip.start
     while cv != None
         if cv.intersect
             cv.entry = status
             status = !status
+        else
+            cv.entry = status
         end
         cv = cv.next
     end
 
+    # phase 3
+    results = Polygon[]
+    numpoly = 1
+    while unprocessed(subject)
+        current = subject.start
+        while current.next != None
+            if current.intersect && !current.visited
+                break
+            end
+            current.visited = true
+            current = current.next
+        end
+        current.visited = true
+        push!(results, Polygon())
+        push!(results[numpoly], Vertex(current.location))
+        start = current.location
+        println(current.location)
+        while true
+            println(current.location)
+            if current.entry
+                while !current.intersect
+                    current = current.next
+                    push!(results[numpoly], Vertex(current.location))
+                    current.visited = true
+                end
+            else
+                while !current.intersect
+                    current = current.prev
+                    push!(results[numpoly], Vertex(current.location))
+                    current.visited = true
+                end
+            end
+            current.visited = true
+            current = current.neighbor
+            if current.location == results[numpoly].start.location
+                break
+            end
+        end
+        numpoly = numpoly + 1
+    end
+
     println(subject)
     println(clip)
+    return results
 end
 
 
