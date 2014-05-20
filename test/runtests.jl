@@ -90,6 +90,20 @@ println("Testing line intersection method...")
 @test (intersection(Vertex([0,0]), Vertex([1,0]), Vertex([1.5,0.5]), Vertex([1.5,-0.5]))
         == (false, 0, 0))
 
+
+# test vertex constructor for insertion
+vert1 = Vertex([0,0])
+vert2 = Vertex([1,1])
+vert3 = Vertex(vert1, vert2, 0.25)
+@test vert3.next === vert2
+@test vert3.prev === vert1
+@test vert3.location == [0.25,0.25]
+vert3 = Vertex(vert2, vert1, 0.25)
+@test vert3.next === vert1
+@test vert3.prev === vert2
+@test vert3.location == [0.75,0.75]
+
+
 # test clipping
 println("Testing clipping...")
 poly1 = Polygon()
