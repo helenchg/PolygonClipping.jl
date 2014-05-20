@@ -16,8 +16,6 @@ for i = 1:10
     vert1 = vert1.next
     vert2 = vert2.next
 end
-
-
 # test we close the polygon and terminate with None
 @test poly.start.location == poly.finish.next.location
 @test poly.finish.next.next == None
@@ -65,18 +63,8 @@ push!(poly1, Vertex([1.1, 0.25]))
 @test isinside(Vertex([0.9,0.25]), poly1) == false
 
 
-
-poly2 = Polygon()
-push!(poly2, Vertex([0.5,0.25]))
-push!(poly2, Vertex([1.5,0.25]))
-push!(poly2, Vertex([1.5,-0.75]))
-push!(poly2, Vertex([0.5,-0.75]))
-println(poly2)
-result = clip(poly1, poly2)
-#println(result[1])
-
-
 # test intersection method
+println("Testing line intersection method...")
 @test (intersection(Vertex([0,0]), Vertex([1,1]), Vertex([1,0]), Vertex([0,1]))
         == (true, 0.5, 0.5))
 @test (intersection(Vertex([0,0]), Vertex([1,1]), Vertex([1/2,0]), Vertex([0,1/2]))
@@ -91,3 +79,30 @@ result = clip(poly1, poly2)
         == (false, 0, 0))
 @test (intersection(Vertex([0,0]), Vertex([0,0]), Vertex([1,1]), Vertex([1,1]))
         == (false, 0, 0))
+@test (intersection(Vertex([0,0]), Vertex([1,0]), Vertex([0.25,0.5]), Vertex([0.25,-0.5]))
+        == (true, 0.25, 0.5))
+@test (intersection(Vertex([1,0]), Vertex([0,0]), Vertex([0.25,0.5]), Vertex([0.25,-0.5]))
+        == (true, 0.75, 0.5))
+@test (intersection(Vertex([0,0]), Vertex([1,0]), Vertex([0.25,-0.5]), Vertex([0.25,0.25]))
+        == (true, 0.25, 2/3))
+@test (intersection(Vertex([0,0]), Vertex([1,0]), Vertex([0.25,0.25]), Vertex([0.25,-0.5]))
+        == (true, 0.25, 1/3))
+@test (intersection(Vertex([0,0]), Vertex([1,0]), Vertex([1.5,0.5]), Vertex([1.5,-0.5]))
+        == (false, 0, 0))
+
+# test clipping
+println("Testing clipping...")
+poly1 = Polygon()
+push!(poly1, Vertex([0,0]))
+push!(poly1, Vertex([1,0]))
+push!(poly1, Vertex([1,1]))
+push!(poly1, Vertex([0,1]))
+
+poly2 = Polygon()
+push!(poly2, Vertex([0.5,0.5]))
+push!(poly2, Vertex([1.5,0.5]))
+push!(poly2, Vertex([1.5,-0.5]))
+push!(poly2, Vertex([0.5,-0.5]))
+println(poly2)
+clip(poly1, poly2)
+#println(result[1])

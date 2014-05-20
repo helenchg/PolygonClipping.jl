@@ -37,9 +37,10 @@ end
 
 function show(io::IO, p::Polygon)
     vert = p.start
-    print("Polygon:")
+    println("A Wild Porygon Appeared:")
+    i = 1
     while vert != None
-        println("Vertex:")
+        println("Vertex ", i, " :")
         println("\tMem:", pointer_from_objref(vert))
         println("\tLocation:",vert.location)
         println("\tNext:",pointer_from_objref(vert.next))
@@ -49,6 +50,7 @@ function show(io::IO, p::Polygon)
         println("\tIntersect:",vert.intersect)
         println("\tEntry:",vert.entry)
         println("\tAlpha:",vert.alpha)
+        i = i + 1
         vert = vert.next
     end
     print("")
@@ -124,36 +126,42 @@ end
 function clip(subject::Polygon, clip::Polygon)
     # Phase 1
     sv = subject.start
-    cv = clip.start
     while sv.next != None
+        cv = clip.start
         while cv.next != None
             println("finding intersection")
             intersect, a, b = intersection(sv, sv.next, cv, cv.next)
-            println(intersect, a, b)
+            println(sv.location, sv.next.location, " to ", cv.location, cv.next.location)
+            println(intersect, " ", a, " ", b)
             if intersect
-                i1 = Vertex(cv, cv.next, a)
-                i2 = Vertex(sv, sv.next, b)
+                i1 = Vertex(sv, sv.next, a)
+                i2 = Vertex(cv, cv.next, b)
                 i1.intersect = true
                 i2.intersect = true
                 i1.neighbor = i2
                 i2.neighbor = i1
-                cv = i1.next # make sure we hop over the vertex we just inserted
+                cv = i2.next # make sure we hop over the vertex we just inserted
             else
                 cv = cv.next
             end
         end
-        sv = sv.next
+        if sv.next.intersect # skip over intersections
+            sv = sv.next.next
+        else
+            sv = sv.next
+        end
     end
 
     # Phase 2
     status = false
     if isinside(subject.start, clip)
+        println("subject Is inside")
         status = false
     else
         status = true
     end
     sv = subject.start
-    while sv.next != None
+    while sv != None
         if sv.intersect
             sv.entry = status
             status = !status
@@ -163,12 +171,13 @@ function clip(subject::Polygon, clip::Polygon)
 
     status = false
     if isinside(clip.start, subject)
+        println("clip Is inside")
         status = false
     else
         status = true
     end
     cv = clip.start
-    while cv.next != None
+    while cv != None
         if cv.intersect
             cv.entry = status
             status = !status
@@ -176,6 +185,8 @@ function clip(subject::Polygon, clip::Polygon)
         cv = cv.next
     end
 
+    println(subject)
+    println(clip)
 end
 
 
@@ -192,8 +203,14 @@ function intersection(sv, svn, cv, cvn)
     a = ((c2[1] - c1[1]) * (s1[2] - c1[2]) - (c2[2] - c1[2]) * (s1[1] - c1[1])) / den
     b = ((s2[1] - s1[1]) * (s1[2] - c1[2]) - (s2[2] - s1[2]) * (s1[1] - c1[1])) / den
 
-    return true, a, b
-
+    if ((a == 1 || a == 0) && (0 <= b <= 1)) || ((b == 1 || b == 0) && (0 <= a <= 1))
+        error("Degenerate case")
+        return false, 0, 0
+    elseif (0 < a < 1) && (0 < b < 1)
+        return true, a, b
+    else
+        return false, 0, 0
+    end
 end
 
 
