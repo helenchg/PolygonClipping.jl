@@ -103,6 +103,17 @@ vert3 = Vertex(vert2, vert1, 0.25)
 @test vert3.prev === vert2
 @test vert3.location == [0.75,0.75]
 
+# test unprocessed
+poly1 = Polygon()
+push!(poly1, Vertex([0,0]))
+push!(poly1, Vertex([1,0]))
+push!(poly1, Vertex([1,1]))
+push!(poly1, Vertex([0,1]))
+@test unprocessed(poly1) == false
+poly1.start.next.intersect = true
+@test unprocessed(poly1) == true
+poly1.start.next.visited = true
+@test unprocessed(poly1) == false
 
 # test clipping
 println("Testing clipping...")

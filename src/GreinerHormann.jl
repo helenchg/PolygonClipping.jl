@@ -82,6 +82,17 @@ function Vertex(s::Vertex, c::Vertex, alpha)
     return a
 end
 
+function unprocessed(p::Polygon)
+    v = p.start
+    while v.next != None
+        if !v.visited && v.intersect
+            return true
+        end
+        v = v.next
+    end
+    return false
+end
+
 function isinside(v::Vertex, p::Polygon)
     # See: http://www.sciencedirect.com/science/article/pii/S0925772101000128
     # "The point in polygon problem for arbitrary polygons"
@@ -214,5 +225,5 @@ function intersection(sv, svn, cv, cvn)
 end
 
 
-export Vertex, Polygon, push!, clip, intersection, isinside, show
+export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed
 end # module
