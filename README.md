@@ -13,8 +13,9 @@ This package is not yet in the Julia package repository. For now, you can call `
 
 ## Build Status
 [![Build Status](https://travis-ci.org/sjkelly/GreinerHormann.jl.svg?branch=master)](https://travis-ci.org/sjkelly/GreinerHormann.jl)
+[![Coverage Status](https://img.shields.io/coveralls/sjkelly/GreinerHormann.jl.svg)](https://coveralls.io/r/sjkelly/GreinerHormann.jl)
 
-This package is being developed under the latest [development verion of Julia](https://github.com/julialang/julia). Therefore it might be incompatible with older releases.
+This package is developed under the latest [development verion of Julia](https://github.com/julialang/julia).
 
 ## License
 The GreinerHormann.jl package is licensed under the MIT "Expat" License. See [LICENSE.md](./LICENSE.md).
