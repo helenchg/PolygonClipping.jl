@@ -2,7 +2,6 @@ module GreinerHormann
 
 import Base.show
 import Base.push!
-using Debug
 using ImmutableArrays
 
 type Vertex
