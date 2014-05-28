@@ -1,6 +1,9 @@
 module GreinerHormann
+
 import Base.show
 import Base.push!
+using Debug
+using ImmutableArrays
 
 type Vertex
     location::Array{Float64}
@@ -12,7 +15,20 @@ type Vertex
     neighbor
     visited::Bool
 
-    Vertex(x) = new(x, None, None, None, false, true, None, false)
+    Vertex(x) = new(x, nothing, nothing, nothing, false, true, nothing, false)
+end
+
+function show(io::IO, vert::Vertex)
+    println("Vertex:")
+    println("\tMem:", pointer_from_objref(vert))
+    println("\tLocation:",vert.location)
+    println("\tNext:",pointer_from_objref(vert.next))
+    println("\tPrev:",pointer_from_objref(vert.prev))
+    println("\tNextPoly:",pointer_from_objref(vert.nextpoly))
+    println("\tNeighbor:",pointer_from_objref(vert.neighbor))
+    println("\tIntersect:",vert.intersect)
+    println("\tEntry:",vert.entry)
+    println("\tVisited:",vert.visited)
 end
 
 ################################################################################
@@ -32,32 +48,23 @@ type Polygon
     start
     finish
 
-    Polygon() = new(None, None)
+    Polygon() = new(nothing, nothing)
 end
 
 function show(io::IO, p::Polygon)
     vert = p.start
     println("A Wild Porygon Appeared:")
     i = 1
-    while vert != None
-        println("Vertex ", i, " :")
-        println("\tMem:", pointer_from_objref(vert))
-        println("\tLocation:",vert.location)
-        println("\tNext:",pointer_from_objref(vert.next))
-        println("\tPrev:",pointer_from_objref(vert.prev))
-        println("\tNextPoly:",pointer_from_objref(vert.nextpoly))
-        println("\tNeighbor:",pointer_from_objref(vert.neighbor))
-        println("\tIntersect:",vert.intersect)
-        println("\tEntry:",vert.entry)
-        println("\tVisited:",vert.visited)
+    while vert != nothing
+        print(i, " ")
+        show(io, vert)
         i = i + 1
         vert = vert.next
     end
-    print("")
 end
 
 function push!(p::Polygon, v::Vertex)
-    if p.start == None
+    if p.start == nothing
         p.start = v
         p.finish = v
         close = Vertex(v.location)
@@ -85,7 +92,7 @@ end
 
 function unprocessed(p::Polygon)
     v = p.start
-    while v.next != None
+    while v.next != nothing
         if !v.visited && v.intersect
             return true
         end
@@ -106,7 +113,7 @@ function isinside(v::Vertex, p::Polygon)
         return
     end
     q2 = q1.next
-    while q2 != None
+    while q2 != nothing
         if q2.location[2] == r[2]
             if q2.location[1] == r[1]
                 error("Vertex case")
@@ -135,12 +142,12 @@ function isinside(v::Vertex, p::Polygon)
     return c
 end
 
-function clip(subject::Polygon, clip::Polygon)
-    # Phase 1
+@debug function phase1!(subject::Polygon, clip::Polygon)
+    @bp
     sv = subject.start
-    while sv.next != None
+    while sv.next != nothing
         cv = clip.start
-        while cv.next != None
+        while cv.next != nothing
             intersect, a, b = intersection(sv, sv.next, cv, cv.next)
             if intersect
                 i1 = Vertex(sv, sv.next, a)
@@ -149,17 +156,19 @@ function clip(subject::Polygon, clip::Polygon)
                 i2.intersect = true
                 i1.neighbor = i2
                 i2.neighbor = i1
-                cv = i2.next # make sure we hop over the vertex we just inserted
+                #cv = i2.next # make sure we hop over the vertex we just inserted
+                #sv = sv.next # go to new intersection point
             else
                 cv = cv.next
             end
         end
-        if sv.next.intersect # skip over intersections
-            sv = sv.next.next
-        else
-            sv = sv.next
-        end
+        sv = sv.next
     end
+end
+
+function clip(subject::Polygon, clip::Polygon)
+    # Phase 1
+    phase1!(subject, clip)
 
     # Phase 2
     status = false
@@ -170,7 +179,7 @@ function clip(subject::Polygon, clip::Polygon)
     else
         status = true
     end
-    while sv != None
+    while sv != nothing
         if sv.intersect
             sv.entry = status
             status = !status
@@ -188,7 +197,7 @@ function clip(subject::Polygon, clip::Polygon)
     else
         status = true
     end
-    while cv != None
+    while cv != nothing
         if cv.intersect
             cv.entry = status
             status = !status
@@ -206,7 +215,7 @@ function clip(subject::Polygon, clip::Polygon)
     numpoly = 1
     while unprocessed(subject)
         current = subject.start
-        while current.next != None
+        while current.next != nothing
             if current.intersect && !current.visited
                 break
             end
@@ -276,7 +285,7 @@ function intersection(sv, svn, cv, cvn)
     b = ((s2[1] - s1[1]) * (s1[2] - c1[2]) - (s2[2] - s1[2]) * (s1[1] - c1[1])) / den
 
     if ((a == 1 || a == 0) && (0 <= b <= 1)) || ((b == 1 || b == 0) && (0 <= a <= 1))
-        error("Degenerate case between:", s1, s2, " and ", c1, c2, " got a:", a, " b:", b)
+        #error("Degenerate case between:", s1, s2, " and ", c1, c2, " got a:", a, " b:", b)
         return false, 0, 0
     elseif (0 < a < 1) && (0 < b < 1)
         return true, a, b
@@ -286,5 +295,5 @@ function intersection(sv, svn, cv, cvn)
 end
 
 
-export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed
+export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed, phase1!
 end # module
