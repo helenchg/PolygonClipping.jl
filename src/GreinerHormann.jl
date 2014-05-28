@@ -79,9 +79,19 @@ function push!(p::Polygon, v::Vertex)
     println("added :", v.location)
 end
 
-function Vertex(s::Vertex, c::Vertex, alpha)
+function Vertex(s::Vertex, c::Vertex, alpha::Float64)
     # Insert a vertex between s and c at alpha from s
     location = s.location + alpha*(c.location-s.location)
+    a = Vertex(location)
+    s.next = a
+    c.prev = a
+    a.next = c
+    a.prev = s
+    return a
+end
+
+function Vertex(s::Vertex, c::Vertex, location::Vector2{Float64})
+    # Insert a vertex between s and c at location
     a = Vertex(location)
     s.next = a
     c.prev = a
@@ -142,22 +152,22 @@ function isinside(v::Vertex, p::Polygon)
     return c
 end
 
-@debug function phase1!(subject::Polygon, clip::Polygon)
-    @bp
+function phase1!(subject::Polygon, clip::Polygon)
     sv = subject.start
     while sv.next != nothing
         cv = clip.start
         while cv.next != nothing
             intersect, a, b = intersection(sv, sv.next, cv, cv.next)
             if intersect
+                println(a,b)
+                println(cv, cv.next)
+                println(sv, sv.next)
                 i1 = Vertex(sv, sv.next, a)
-                i2 = Vertex(cv, cv.next, b)
+                i2 = Vertex(cv, cv.next, i1.location)
                 i1.intersect = true
                 i2.intersect = true
                 i1.neighbor = i2
                 i2.neighbor = i1
-                #cv = i2.next # make sure we hop over the vertex we just inserted
-                #sv = sv.next # go to new intersection point
             else
                 cv = cv.next
             end
@@ -169,6 +179,9 @@ end
 function clip(subject::Polygon, clip::Polygon)
     # Phase 1
     phase1!(subject, clip)
+
+    println(subject)
+    println(clip)
 
     # Phase 2
     status = false
@@ -207,8 +220,8 @@ function clip(subject::Polygon, clip::Polygon)
         cv = cv.next
     end
 
-    println(subject)
-    println(clip)
+    #println(subject)
+    #println(clip)
 
     # phase 3
     results = Polygon[]
