@@ -6,7 +6,7 @@ using Debug
 using ImmutableArrays
 
 type Vertex
-    location::Array{Float64}
+    location::Vector2{Float64}
     next
     prev
     nextpoly
@@ -15,7 +15,7 @@ type Vertex
     neighbor
     visited::Bool
 
-    Vertex(x) = new(x, nothing, nothing, nothing, false, true, nothing, false)
+    Vertex(x) = new(Vector2(x), nothing, nothing, nothing, false, true, nothing, false)
 end
 
 function show(io::IO, vert::Vertex)
