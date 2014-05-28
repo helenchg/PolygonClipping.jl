@@ -172,11 +172,7 @@ function phase1!(subject::Polygon, clip::Polygon)
     end
 end
 
-function clip(subject::Polygon, clip::Polygon)
-    # Phase 1
-    phase1!(subject, clip)
-
-    # Phase 2
+function phase2!(subject::Polygon, clip::Polygon)
     status = false
     sv = subject.start
     if isinside(sv, clip)
@@ -212,6 +208,14 @@ function clip(subject::Polygon, clip::Polygon)
         end
         cv = cv.next
     end
+end
+
+function clip(subject::Polygon, clip::Polygon)
+    # Phase 1
+    phase1!(subject, clip)
+
+    # Phase 2
+    phase2!(subject, clip)
 
     println(subject)
     println(clip)
