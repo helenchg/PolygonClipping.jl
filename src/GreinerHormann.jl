@@ -75,7 +75,6 @@ function push!(p::Polygon, v::Vertex)
         p.finish.next = v
         p.finish = v
     end
-    println("added :", v.location)
 end
 
 function Vertex(s::Vertex, c::Vertex, alpha::Float64)
@@ -122,6 +121,7 @@ function isinside(v::Vertex, p::Polygon)
         return
     end
     q2 = q1.next
+    detq(q1,q2) = (q1[1]-r[1])*(q2[2]-r[2])-(q2[1]-r[1])*(q1[2]-r[2])
     while q2 != nothing
         if q2.location[2] == r[2]
             if q2.location[1] == r[1]
@@ -132,15 +132,15 @@ function isinside(v::Vertex, p::Polygon)
                 return
             end
         end
-        if (q1.location[2] < r[2]) != (q2.location[2] < r[2])
+        if (q1.location[2] < r[2]) != (q2.location[2] < r[2]) # crossing
             if q1.location[1] >= r[1]
                 if q2.location[1] > r[1]
                     c = !c
-                elseif ((det([q1.location q2.location]) > 0) == (q2.location[2] > q1.location[2]))
+                elseif ((detq(q1.location,q2.location) > 0) == (q2.location[2] > q1.location[2])) # right crossing
                     c = !c
                 end
             elseif q2.location[1] > r[1]
-                if ((det([q1.location q2.location]) > 0) == (q2.location[2] > q1.location[2]))
+                if ((detq(q1.location,q2.location) > 0) == (q2.location[2] > q1.location[2])) # right crossing
                     c = !c
                 end
             end
@@ -164,8 +164,9 @@ function phase1!(subject::Polygon, clip::Polygon)
                 i2.intersect = true
                 i1.neighbor = i2
                 i2.neighbor = i1
+            else
+                cv = cv.next
             end
-            cv = cv.next
         end
         sv = sv.next
     end
@@ -239,26 +240,24 @@ function clip(subject::Polygon, clip::Polygon)
         while true
             println("Skip:", current.location)
             if current.entry
-                current = current.next
-                println("Next:",current.location)
-                push!(results[numpoly], Vertex(current.location))
-                current.visited = true
-                while !current.intersect
+                while true
                     println("Next loop:",current.location)
                     current = current.next
                     push!(results[numpoly], Vertex(current.location))
                     current.visited = true
+                    if current.intersect
+                        break
+                    end
                 end
             else
-                current = current.prev
-                println("Prev:",current.location)
-                push!(results[numpoly], Vertex(current.location))
-                current.visited = true
-                while !current.intersect
+                while true
                     println("Prev:",current.location)
                     current = current.prev
                     push!(results[numpoly], Vertex(current.location))
                     current.visited = true
+                    if current.intersect
+                        break
+                    end
                 end
             end
             current.visited = true

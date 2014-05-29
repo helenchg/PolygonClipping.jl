@@ -52,16 +52,16 @@ push!(poly1, Vertex([0.9,0.5]))
 @test isinside(Vertex([0.9,0.9]), poly1) == true
 @test isinside(Vertex([0.9,0.9]), poly1) == true
 @test isinside(Vertex([0.99,0.1]), poly1) == true
-@test isinside(Vertex([0.5,0.5]), poly1) == false
-# the test below is an edge case we don't handle yet
-#@test isinside(Vertex([0.9,0.1]), poly1) == true
+@test isinside(Vertex([0.99,0.5]), poly1) == true
+@test isinside(Vertex([0.9,0.1]), poly1) == true
 
 # add self-intersection
 push!(poly1, Vertex([1.1, 0.25]))
-@test isinside(Vertex([1.09,0.24]), poly1) == true
+@test isinside(Vertex([1.09,0.25]), poly1) == true
 @test isinside(Vertex([1.09,0.26]), poly1) == true
 @test isinside(Vertex([0.9,0.25]), poly1) == false
-
+@test isinside(Vertex([0.9,0.05]), poly1) == true
+@test isinside(Vertex([0.9,0.9]), poly1) == true
 
 # test intersection method
 println("Testing line intersection method...")
@@ -146,5 +146,5 @@ push!(poly3, Vertex([0.9,-0.1]))
 push!(poly3, Vertex([0.9,0.1]))
 push!(poly3, Vertex([0.5,-0.05]))
 push!(poly3, Vertex([0.1,0.1]))
-a = clip(poly1, poly3)
+a = clip(poly3, poly1)
 println(a)
