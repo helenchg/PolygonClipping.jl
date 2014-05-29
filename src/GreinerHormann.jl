@@ -6,12 +6,12 @@ using ImmutableArrays
 
 type Vertex
     location::Vector2{Float64}
-    next
-    prev
-    nextpoly
+    next::Union(Vertex, Nothing)
+    prev::Union(Vertex, Nothing)
+    nextpoly::Union(Vertex, Nothing)
     intersect::Bool
     entry::Bool
-    neighbor
+    neighbor::Union(Vertex, Nothing)
     visited::Bool
 
     Vertex(x) = new(Vector2(x), nothing, nothing, nothing, false, true, nothing, false)
@@ -44,8 +44,8 @@ end
 ################################################################################
 
 type Polygon
-    start
-    finish
+    start::Union(Vertex, Nothing)
+    finish::Union(Vertex, Nothing)
 
     Polygon() = new(nothing, nothing)
 end
@@ -279,26 +279,26 @@ function clip(subject::Polygon, clip::Polygon)
 end
 
 
-function intersection(sv, svn, cv, cvn)
+function intersection(sv::Vertex, svn::Vertex, cv::Vertex, cvn::Vertex)
     s1 = sv.location
     s2 = svn.location
     c1 = cv.location
     c2 = cvn.location
 
     den = (c2[2] - c1[2]) * (s2[1] - s1[1]) - (c2[1] - c1[1]) * (s2[2] - s1[2])
-    if den == 0
-        return false, 0, 0
+    if den == 0.0
+        return false, 0.0, 0.0
     end
     a = ((c2[1] - c1[1]) * (s1[2] - c1[2]) - (c2[2] - c1[2]) * (s1[1] - c1[1])) / den
     b = ((s2[1] - s1[1]) * (s1[2] - c1[2]) - (s2[2] - s1[2]) * (s1[1] - c1[1])) / den
 
-    if ((a == 1 || a == 0) && (0 <= b <= 1)) || ((b == 1 || b == 0) && (0 <= a <= 1))
+    if ((a in [0.0,1.0]) && (0.0 <= b <= 1.0)) || ((b in [0.0,1.0]) && (0.0 <= a <= 1.0))
         #error("Degenerate case between:", s1, s2, " and ", c1, c2, " got a:", a, " b:", b)
-        return false, 0, 0
-    elseif (0 < a < 1) && (0 < b < 1)
+        return false, 0.0, 0.0
+    elseif (0.0 < a < 1.0) && (0.0 < b < 1.0)
         return true, a, b
     else
-        return false, 0, 0
+        return false, 0.0, 0.0
     end
 end
 
