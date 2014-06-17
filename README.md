@@ -9,7 +9,7 @@ The papers by Günther Greiner, Kai Hormann, and Alexander Agathos served as the
 
 
 ## Install
-This package is not yet in the Julia package repository. For now, you can call ```Pkg.clone(https://github.com/sjkelly/GreinerHormann.jl.git)``` in the Julia REPL.
+This package is not yet in the Julia package repository. For now, you can call ```Pkg.clone("https://github.com/sjkelly/GreinerHormann.jl.git")``` in the Julia REPL.
 
 ## Build Status
 [![Build Status](https://travis-ci.org/sjkelly/GreinerHormann.jl.svg?branch=master)](https://travis-ci.org/sjkelly/GreinerHormann.jl)
