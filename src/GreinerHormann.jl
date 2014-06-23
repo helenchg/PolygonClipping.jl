@@ -50,6 +50,11 @@ type Polygon
     Polygon() = new(nothing, nothing)
 end
 
+Base.start(m::Polygon) = m.start
+Base.next(m::Polygon, state::Vertex) = (state, state.next)
+Base.done(m::Polygon, state::Vertex) = false
+Base.done(m::Polygon, state::Nothing) = true
+
 function show(io::IO, p::Polygon)
     vert = p.start
     println("A Wild Porygon Appeared:")

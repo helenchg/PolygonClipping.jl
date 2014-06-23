@@ -22,6 +22,14 @@ end
 @test poly.start.location == poly.finish.next.location
 @test poly.finish.next.next == nothing
 
+# Test iterator
+i = 0
+for vert in poly
+    i += 1
+end
+println(i)
+@test i == 12
+
 println("Testing vertex constructors...")
 vert1 = Vertex([0,0])
 vert2 = Vertex([2,1])
