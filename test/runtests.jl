@@ -1,3 +1,5 @@
+#! /usr/bin/env julia
+
 using GreinerHormann
 using Base.Test
 
