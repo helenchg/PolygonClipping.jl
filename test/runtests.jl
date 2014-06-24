@@ -19,7 +19,6 @@ end
 println(poly)
 @test i == 11
 
-
 vert1 = poly.start
 vert2 = vert1.next
 for i = 1:10
@@ -27,10 +26,6 @@ for i = 1:10
     vert1 = vert1.next
     vert2 = vert2.next
 end
-# test we close the polygon and terminate with nothing
-@test poly.start.location == poly.finish.next.location
-@test poly.finish.next.next == nothing
-
 
 println("Testing vertex constructors...")
 vert1 = Vertex([0,0])
