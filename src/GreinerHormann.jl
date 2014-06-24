@@ -101,12 +101,10 @@ function Vertex(s::Vertex, c::Vertex, location::Vector2{Float64})
 end
 
 function unprocessed(p::Polygon)
-    v = p.start
-    while v.next != nothing
+    for v in p
         if !v.visited && v.intersect
             return true
         end
-        v = v.next
     end
     return false
 end
@@ -118,7 +116,7 @@ function isinside(v::Vertex, poly::Polygon)
     c = false
     r = v.location
     detq(q1,q2) = (q1[1]-r[1])*(q2[2]-r[2])-(q2[1]-r[1])*(q1[2]-r[2])
-    while for q1 in poly
+    for q1 in poly
         q2 = q1.next
         if q1.location == r
             error("Vertex case")
@@ -146,8 +144,6 @@ function isinside(v::Vertex, poly::Polygon)
                 end
             end
         end
-        q1 = q1.next
-        q2 = q2.next
     end
     return c
 end

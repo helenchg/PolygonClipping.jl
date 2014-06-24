@@ -16,7 +16,6 @@ i = 0
 for vert in poly
     i += 1
 end
-println(poly)
 @test i == 11
 
 vert1 = poly.start
@@ -98,7 +97,7 @@ println("Testing line intersection method...")
         == (false, 0, 0))
 
 
-# test vertex constructor for insertion
+println("Testing Vertex insertion")
 vert1 = Vertex([0,0])
 vert2 = Vertex([1,1])
 vert3 = Vertex(vert1, vert2, 0.25)
@@ -110,6 +109,7 @@ vert3 = Vertex(vert2, vert1, 0.25)
 @test vert3.prev === vert2
 @test vert3.location == [0.75,0.75]
 
+println("Testing unprocessed")
 # test unprocessed
 poly1 = Polygon()
 push!(poly1, Vertex([0,0]))
