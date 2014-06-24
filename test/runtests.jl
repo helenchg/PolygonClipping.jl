@@ -11,6 +11,15 @@ push!(poly, vert1)
 for i = 1:10
     push!(poly, Vertex(rand(2)))
 end
+# Test iterator
+i = 0
+for vert in poly
+    i += 1
+end
+println(poly)
+@test i == 11
+
+
 vert1 = poly.start
 vert2 = vert1.next
 for i = 1:10
@@ -22,13 +31,6 @@ end
 @test poly.start.location == poly.finish.next.location
 @test poly.finish.next.next == nothing
 
-# Test iterator
-i = 0
-for vert in poly
-    i += 1
-end
-println(i)
-@test i == 12
 
 println("Testing vertex constructors...")
 vert1 = Vertex([0,0])

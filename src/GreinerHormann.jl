@@ -15,6 +15,7 @@ type Vertex
     visited::Bool
 
     Vertex(x) = new(Vector2(x), nothing, nothing, nothing, false, true, nothing, false)
+    Vertex(x, a::Vertex, b::Vertex) = new(Vector2(x), a, b, nothing, false, true, nothing, false)
 end
 
 function show(io::IO, vert::Vertex)
@@ -45,61 +46,57 @@ end
 
 type Polygon
     start::Union(Vertex, Nothing)
-    finish::Union(Vertex, Nothing)
 
-    Polygon() = new(nothing, nothing)
+    Polygon() = new(nothing)
 end
 
-Base.start(m::Polygon) = m.start
-Base.next(m::Polygon, state::Vertex) = (state, state.next)
-Base.done(m::Polygon, state::Vertex) = false
-Base.done(m::Polygon, state::Nothing) = true
+Base.start(m::Polygon) = (m.start, false)
+function Base.next(m::Polygon, state::(Vertex, Bool))
+    if is(m.start, state[1])
+        return (state[1], (state[1].next, true))
+    else
+        return (state[1], (state[1].next, state[2]))
+    end
+end
+Base.done(m::Polygon, state::(Vertex, Bool)) = (is(m.start, state[1]) && state[2])
 
 function show(io::IO, p::Polygon)
-    vert = p.start
     println("A Wild Porygon Appeared:")
     i = 1
-    while vert != nothing
+    for vert in p
         print(i, " ")
         show(io, vert)
         i = i + 1
-        vert = vert.next
     end
 end
 
 function push!(p::Polygon, v::Vertex)
     if p.start == nothing
         p.start = v
-        p.finish = v
-        close = Vertex(v.location)
-        close.prev = v
-        p.start.next = close
+        v.prev = v
+        v.next = v
     else
-        v.next = p.finish.next
-        v.prev = p.finish
-        p.finish.next = v
-        p.finish = v
+        v.next = p.start
+        v.prev = p.start.prev
+        p.start.prev.next = v
+        p.start.prev = v
     end
 end
 
 function Vertex(s::Vertex, c::Vertex, alpha::Float64)
     # Insert a vertex between s and c at alpha from s
     location = s.location + alpha*(c.location-s.location)
-    a = Vertex(location)
+    a = Vertex(location, c, s)
     s.next = a
     c.prev = a
-    a.next = c
-    a.prev = s
     return a
 end
 
 function Vertex(s::Vertex, c::Vertex, location::Vector2{Float64})
     # Insert a vertex between s and c at location
-    a = Vertex(location)
+    a = Vertex(location, c, s)
     s.next = a
     c.prev = a
-    a.next = c
-    a.prev = s
     return a
 end
 
