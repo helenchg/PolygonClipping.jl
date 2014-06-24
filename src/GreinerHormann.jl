@@ -184,18 +184,7 @@ function phase2!(subject::Polygon, clip::Polygon)
     end
 end
 
-function clip(subject::Polygon, clip::Polygon)
-    # Phase 1
-    phase1!(subject, clip)
-
-    # Phase 2
-    phase2!(subject, clip)
-    phase2!(clip, subject)
-
-    println(subject)
-    println(clip)
-
-    # phase 3
+function phase3!(subject::Polygon, clip::Polygon)
     results = Polygon[]
     numpoly = 1
     while unprocessed(subject)
@@ -247,10 +236,15 @@ function clip(subject::Polygon, clip::Polygon)
         end
         numpoly = numpoly + 1
     end
+end
 
-#    println(subject)
-#    println(clip)
-    return results
+function clip(subject::Polygon, clip::Polygon)
+    phase1!(subject, clip)
+
+    phase2!(subject, clip)
+    phase2!(clip, subject)
+
+    return phase3!(subject, clip)
 end
 
 
@@ -278,5 +272,5 @@ function intersection(sv::Vertex, svn::Vertex, cv::Vertex, cvn::Vertex)
 end
 
 
-export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed, phase1!
+export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed
 end # module

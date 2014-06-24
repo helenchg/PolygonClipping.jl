@@ -1,6 +1,7 @@
 #! /usr/bin/env julia
 
 using GreinerHormann
+gh = GreinerHormann
 using Base.Test
 
 # Test Doubly linked list
@@ -69,7 +70,7 @@ push!(poly1, Vertex([1.1, 0.25]))
 @test isinside(Vertex([0.9,0.05]), poly1) == true
 @test isinside(Vertex([0.9,0.9]), poly1) == true
 
-# test intersection method
+
 println("Testing line intersection method...")
 @test (intersection(Vertex([0,0]), Vertex([1,1]), Vertex([1,0]), Vertex([0,1]))
         == (true, 0.5, 0.5))
@@ -110,7 +111,6 @@ vert3 = Vertex(vert2, vert1, 0.25)
 @test vert3.location == [0.75,0.75]
 
 println("Testing unprocessed")
-# test unprocessed
 poly1 = Polygon()
 push!(poly1, Vertex([0,0]))
 push!(poly1, Vertex([1,0]))
