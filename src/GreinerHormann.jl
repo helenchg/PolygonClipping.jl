@@ -111,20 +111,19 @@ function unprocessed(p::Polygon)
     return false
 end
 
-function isinside(v::Vertex, p::Polygon)
+function isinside(v::Vertex, poly::Polygon)
     # See: http://www.sciencedirect.com/science/article/pii/S0925772101000128
     # "The point in polygon problem for arbitrary polygons"
     # An implementation of Hormann-Agathos (2001) Point in Polygon algorithm
     c = false
     r = v.location
-    q1 = p.start
-    if q1.location == r
-        error("Vertex case")
-        return
-    end
-    q2 = q1.next
     detq(q1,q2) = (q1[1]-r[1])*(q2[2]-r[2])-(q2[1]-r[1])*(q1[2]-r[2])
-    while q2 != nothing
+    while for q1 in poly
+        q2 = q1.next
+        if q1.location == r
+            error("Vertex case")
+            return
+        end
         if q2.location[2] == r[2]
             if q2.location[1] == r[1]
                 error("Vertex case")
