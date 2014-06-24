@@ -149,10 +149,8 @@ function isinside(v::Vertex, poly::Polygon)
 end
 
 function phase1!(subject::Polygon, clip::Polygon)
-    sv = subject.start
-    while sv.next != nothing
-        cv = clip.start
-        while cv.next != nothing
+    for sv in subject
+        for cv in clip
             intersect, a, b = intersection(sv, sv.next, cv, cv.next)
             if intersect
                 i1 = Vertex(sv, sv.next, a)
@@ -161,11 +159,9 @@ function phase1!(subject::Polygon, clip::Polygon)
                 i2.intersect = true
                 i1.neighbor = i2
                 i2.neighbor = i1
-            else
-                cv = cv.next
+                cv = cv.prev
             end
         end
-        sv = sv.next
     end
 end
 
@@ -178,32 +174,13 @@ function phase2!(subject::Polygon, clip::Polygon)
     else
         status = true
     end
-    while sv != nothing
+    for sv in subject
         if sv.intersect
             sv.entry = status
             status = !status
         else
             sv.entry = status
         end
-        sv = sv.next
-    end
-
-    status = false
-    cv = clip.start
-    if isinside(cv, subject)
-        println("clip Is inside")
-        status = false
-    else
-        status = true
-    end
-    while cv != nothing
-        if cv.intersect
-            cv.entry = status
-            status = !status
-        else
-            cv.entry = status
-        end
-        cv = cv.next
     end
 end
 
@@ -213,6 +190,7 @@ function clip(subject::Polygon, clip::Polygon)
 
     # Phase 2
     phase2!(subject, clip)
+    phase2!(clip, subject)
 
     println(subject)
     println(clip)
