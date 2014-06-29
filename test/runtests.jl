@@ -50,6 +50,9 @@ push!(poly1, Vertex([1,1]))
 push!(poly1, Vertex([0,1]))
 @test isinside(Vertex([0.5,0.5]), poly1) == true
 @test isinside(Vertex([-0.5,0.5]), poly1) == false
+@test_throws VertexException isinside(Vertex([0,0]), poly1)
+@test_throws VertexException isinside(Vertex([1,0]), poly1)
+@test_throws EdgeException isinside(Vertex([0.5,0.0]), poly1)
 for i = 1:100
     @test isinside(Vertex(rand(2)), poly1) == true
 end

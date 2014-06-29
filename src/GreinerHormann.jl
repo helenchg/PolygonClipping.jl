@@ -4,6 +4,9 @@ import Base.show
 import Base.push!
 using ImmutableArrays
 
+export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed,
+       VertexException, EdgeException
+
 type Vertex
     location::Vector2{Float64}
     next::Union(Vertex, Nothing)
@@ -17,6 +20,9 @@ type Vertex
     Vertex(x) = new(Vector2(x), nothing, nothing, nothing, false, true, nothing, false)
     Vertex(x, a::Vertex, b::Vertex) = new(Vector2(x), a, b, nothing, false, true, nothing, false)
 end
+
+type VertexException <: Exception end
+type EdgeException <: Exception end
 
 function show(io::IO, vert::Vertex)
     println("Vertex:")
@@ -119,16 +125,13 @@ function isinside(v::Vertex, poly::Polygon)
     for q1 in poly
         q2 = q1.next
         if q1.location == r
-            error("Vertex case")
-            return
+            throw(VertexException())
         end
         if q2.location[2] == r[2]
             if q2.location[1] == r[1]
-                error("Vertex case")
-                return
+                throw(VertexException())
             elseif (q1.location[2] == r[2]) && ((q2.location[1] > r[1]) == (q1.location[1] < r[1]))
-                error("Edge case")
-                return
+                throw(EdgeException())
             end
         end
         if (q1.location[2] < r[2]) != (q2.location[2] < r[2]) # crossing
@@ -271,6 +274,4 @@ function intersection(sv::Vertex, svn::Vertex, cv::Vertex, cvn::Vertex)
     end
 end
 
-
-export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed
 end # module
