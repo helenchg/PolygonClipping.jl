@@ -5,7 +5,7 @@ import Base.push!
 using ImmutableArrays
 
 export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed,
-       VertexException, EdgeException
+       VertexException, EdgeException, DegeneracyException
 
 type Vertex
     location::Vector2{Float64}
@@ -23,6 +23,7 @@ end
 
 type VertexException <: Exception end
 type EdgeException <: Exception end
+type DegeneracyException <: Exception end
 
 function show(io::IO, vert::Vertex)
     println("Vertex:")
@@ -264,11 +265,10 @@ function intersection(sv::Vertex, svn::Vertex, cv::Vertex, cvn::Vertex)
     a = ((c2[1] - c1[1]) * (s1[2] - c1[2]) - (c2[2] - c1[2]) * (s1[1] - c1[1])) / den
     b = ((s2[1] - s1[1]) * (s1[2] - c1[2]) - (s2[2] - s1[2]) * (s1[1] - c1[1])) / den
 
-    if ((a in [0.0,1.0]) && (0.0 <= b <= 1.0)) || ((b in [0.0,1.0]) && (0.0 <= a <= 1.0))
-        #error("Degenerate case between:", s1, s2, " and ", c1, c2, " got a:", a, " b:", b)
-        return false, 0.0, 0.0
-    elseif (0.0 < a < 1.0) && (0.0 < b < 1.0)
+    if (0.0 < a < 1.0) && (0.0 < b < 1.0)
         return true, a, b
+    elseif ((a in [0.0,1.0]) && (0.0 <= b <= 1.0)) || ((b in [0.0,1.0]) && (0.0 <= a <= 1.0))
+        throw(DegeneracyException())
     else
         return false, 0.0, 0.0
     end

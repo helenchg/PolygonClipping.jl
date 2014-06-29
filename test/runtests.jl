@@ -99,7 +99,7 @@ println("Testing line intersection method...")
         == (true, 0.25, 1/3))
 @test (intersection(Vertex([0,0]), Vertex([1,0]), Vertex([1.5,0.5]), Vertex([1.5,-0.5]))
         == (false, 0, 0))
-
+@test_throws DegeneracyException intersection(Vertex([0,0]), Vertex([1,0]), Vertex([0.5,0]), Vertex([0.5,1.0]))
 
 println("Testing Vertex insertion")
 vert1 = Vertex([0,0])
