@@ -18,6 +18,7 @@ for vert in poly
     i += 1
 end
 @test i == 11
+@test length(poly) == 11
 
 vert1 = poly.start
 vert2 = vert1.next
@@ -159,7 +160,11 @@ push!(poly3, Vertex([0.1,0.1]))
 push!(poly3, Vertex([0.1,-0.1]))
 println(poly1)
 println(poly3)
+@test length(poly1) == 4
+@test length(poly3) == 5
 gh.phase1!(poly3, poly1)
+@test length(poly1) == 8
+@test length(poly3) == 9
 println(a)
 println(poly1)
 println(poly3)

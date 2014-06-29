@@ -5,7 +5,7 @@ import Base.push!
 using ImmutableArrays
 
 export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed,
-       VertexException, EdgeException, DegeneracyException
+       VertexException, EdgeException, DegeneracyException, length
 
 type Vertex
     location::Vector2{Float64}
@@ -66,6 +66,15 @@ function Base.next(m::Polygon, state::(Vertex, Bool))
     end
 end
 Base.done(m::Polygon, state::(Vertex, Bool)) = (is(m.start, state[1]) && state[2])
+
+function length(p::Polygon)
+    n = 0
+    for i in p
+        n += 1
+    end
+    n
+end
+
 
 function show(io::IO, p::Polygon)
     println("A Wild Porygon Appeared:")
