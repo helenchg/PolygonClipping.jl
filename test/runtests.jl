@@ -160,11 +160,27 @@ push!(poly3, Vertex([0.1,0.1]))
 push!(poly3, Vertex([0.1,-0.1]))
 println(poly1)
 println(poly3)
+
+#test phase1
 @test length(poly1) == 4
 @test length(poly3) == 5
 gh.phase1!(poly3, poly1)
 @test length(poly1) == 8
 @test length(poly3) == 9
-println(a)
+intersects = 0
+for p1 in poly1, p2 in poly3
+    if p1.location == p2.location
+        @test is(p1.neighbor, p2)
+        @test is(p2.neighbor, p1)
+        @test p1.intersect
+        @test p2.intersect
+        intersects += 1
+    end
+end
+@test intersects == 4 # make sure we found 4 intersections
+
+println(poly1)
+println(poly3)
+gh.phase2!(poly3, poly1)
 println(poly1)
 println(poly3)
