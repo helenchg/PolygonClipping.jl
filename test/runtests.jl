@@ -207,3 +207,19 @@ push!(poly2, Vertex([0.5,-0.5]))
 results = intersection(poly1, poly2)
 @test length(results) == 1
 @test length(results[1]) == 5
+
+poly1 = Polygon()
+push!(poly1, Vertex([1,0]))
+push!(poly1, Vertex([1,1]))
+push!(poly1, Vertex([0,1]))
+push!(poly1, Vertex([0,0]))
+
+poly2 = Polygon()
+push!(poly2, Vertex([0.5,0.5]))
+push!(poly2, Vertex([1.5,0.5]))
+push!(poly2, Vertex([1.5,-0.5]))
+push!(poly2, Vertex([0.5,-0.5]))
+results = intersection(poly1, poly2)
+@test length(results) == 1
+@test length(results[1]) == 5
+
