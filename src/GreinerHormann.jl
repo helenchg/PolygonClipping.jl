@@ -214,12 +214,9 @@ function phase3!(subject::Polygon, clip::Polygon)
         push!(results, Polygon())
         push!(results[numpoly], Vertex(current.location))
         start = current.location
-        println(current.location)
         while true
-            println("Skip:", current.location)
             if current.entry
                 while true
-                    println("Next loop:",current.location)
                     current = current.next
                     push!(results[numpoly], Vertex(current.location))
                     current.visited = true
@@ -229,7 +226,6 @@ function phase3!(subject::Polygon, clip::Polygon)
                 end
             else
                 while true
-                    println("Prev:",current.location)
                     current = current.prev
                     push!(results[numpoly], Vertex(current.location))
                     current.visited = true
@@ -238,7 +234,6 @@ function phase3!(subject::Polygon, clip::Polygon)
                     end
                 end
             end
-            println("loop:", current.location)
             if current.location == start
                 break
             else
