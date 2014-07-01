@@ -1,6 +1,8 @@
 # GreinerHormann
 GreinerHormann.jl is an implementation of the [Greiner-Hormann](https://en.wikipedia.org/wiki/Greiner-Hormann_clipping_algorithm) polygon [clipping algorithm](https://en.wikipedia.org/wiki/Clipping_%28computer_graphics%29). In addition it uses the Hormann-Agathos algorithm to see if a [point is in a polygon](https://en.wikipedia.org/wiki/Point_in_polygon).
 
+![](./img/clip.png)
+
 ## References
 The papers by Günther Greiner, Kai Hormann, and Alexander Agathos served as the basis for this library.
 
