@@ -2,6 +2,7 @@ module GreinerHormann
 
 import Base.show
 import Base.push!
+import Base.length
 using ImmutableArrays
 
 export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed,
@@ -202,7 +203,7 @@ function phase3!(subject::Polygon, clip::Polygon)
     numpoly = 1
     while unprocessed(subject)
         current = subject.start
-        while current.next != nothing
+        while true
             if current.intersect && !current.visited
                 break
             end
@@ -237,18 +238,17 @@ function phase3!(subject::Polygon, clip::Polygon)
                     end
                 end
             end
-            current.visited = true
-            current = current.neighbor
             println("loop:", current.location)
             if current.location == start
                 break
             else
-                current.visited = true
                 current = current.neighbor
+                current.visited = true
             end
         end
         numpoly = numpoly + 1
     end
+    return results
 end
 
 function clip(subject::Polygon, clip::Polygon)

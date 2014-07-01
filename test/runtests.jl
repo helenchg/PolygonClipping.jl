@@ -128,25 +128,6 @@ poly1.start.next.visited = true
 
 # test clipping
 println("Testing clipping...")
-#poly1 = Polygon()
-#push!(poly1, Vertex([0,1]))
-#push!(poly1, Vertex([1,1]))
-#push!(poly1, Vertex([1,0]))
-#push!(poly1, Vertex([0,0]))
-
-#poly2 = Polygon()
-#push!(poly2, Vertex([0.5,0.5]))
-#push!(poly2, Vertex([1.5,0.5]))
-#push!(poly2, Vertex([1.5,-0.5]))
-#push!(poly2, Vertex([0.5,-0.5]))
-#phase1!(poly1, poly2)
-#println(poly1)
-#println(poly2)
-
-#a = clip(poly2, poly1)
-#println(a)
-
-#test multiple return
 poly1 = Polygon()
 push!(poly1, Vertex([0,1]))
 push!(poly1, Vertex([1,1]))
@@ -182,8 +163,42 @@ end
 println(poly1)
 println(poly3)
 gh.phase2!(poly3, poly1)
-println(poly1)
-println(poly3)
-gh.phase3!(poly3, poly1)
-println(poly1)
-println(poly3)
+gh.phase2!(poly1, poly3)
+entries = 0
+for vert in poly1
+    if vert.entry
+        entries += 1
+    end
+end
+@test entries == 6
+entries = 0
+for vert in poly3
+    if vert.entry
+        entries += 1
+    end
+end
+@test entries == 5
+
+
+results = gh.phase3!(poly3, poly1)
+@test length(results) == 2
+@test length(results[1]) == 4
+@test length(results[2]) == 4
+
+#poly1 = Polygon()
+#push!(poly1, Vertex([0,1]))
+#push!(poly1, Vertex([1,1]))
+#push!(poly1, Vertex([1,0]))
+#push!(poly1, Vertex([0,0]))
+
+#poly2 = Polygon()
+#push!(poly2, Vertex([0.5,0.5]))
+#push!(poly2, Vertex([1.5,0.5]))
+#push!(poly2, Vertex([1.5,-0.5]))
+#push!(poly2, Vertex([0.5,-0.5]))
+#phase1!(poly1, poly2)
+#println(poly1)
+#println(poly2)
+
+#a = clip(poly2, poly1)
+#println(a)
