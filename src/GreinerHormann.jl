@@ -5,7 +5,7 @@ import Base.push!
 import Base.length
 using ImmutableArrays
 
-export Vertex, Polygon, push!, clip, intersection, isinside, show, unprocessed,
+export Vertex, Polygon, push!, intersection, isinside, show, unprocessed,
        VertexException, EdgeException, DegeneracyException, length
 
 type Vertex
@@ -183,7 +183,6 @@ function phase2!(subject::Polygon, clip::Polygon)
     status = false
     sv = subject.start
     if isinside(sv, clip)
-        println("subject Is inside")
         status = false
     else
         status = true
@@ -198,7 +197,12 @@ function phase2!(subject::Polygon, clip::Polygon)
     end
 end
 
-function phase3!(subject::Polygon, clip::Polygon)
+function intersection(subject::Polygon, clip::Polygon)
+    phase1!(subject, clip)
+
+    phase2!(subject, clip)
+    phase2!(clip, subject)
+
     results = Polygon[]
     numpoly = 1
     while unprocessed(subject)
@@ -245,16 +249,6 @@ function phase3!(subject::Polygon, clip::Polygon)
     end
     return results
 end
-
-function clip(subject::Polygon, clip::Polygon)
-    phase1!(subject, clip)
-
-    phase2!(subject, clip)
-    phase2!(clip, subject)
-
-    return phase3!(subject, clip)
-end
-
 
 function intersection(sv::Vertex, svn::Vertex, cv::Vertex, cvn::Vertex)
     s1 = sv.location

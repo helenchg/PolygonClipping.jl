@@ -139,8 +139,6 @@ push!(poly3, Vertex([0.9,0.1]))
 push!(poly3, Vertex([0.5,-0.05]))
 push!(poly3, Vertex([0.1,0.1]))
 push!(poly3, Vertex([0.1,-0.1]))
-println(poly1)
-println(poly3)
 
 #test phase1
 @test length(poly1) == 4
@@ -160,8 +158,6 @@ for p1 in poly1, p2 in poly3
 end
 @test intersects == 4 # make sure we found 4 intersections
 
-println(poly1)
-println(poly3)
 gh.phase2!(poly3, poly1)
 gh.phase2!(poly1, poly3)
 entries = 0
@@ -179,26 +175,35 @@ for vert in poly3
 end
 @test entries == 5
 
+poly1 = Polygon()
+push!(poly1, Vertex([0,1]))
+push!(poly1, Vertex([1,1]))
+push!(poly1, Vertex([1,0]))
+push!(poly1, Vertex([0,0]))
+poly3 = Polygon()
+push!(poly3, Vertex([0.9,-0.1]))
+push!(poly3, Vertex([0.9,0.1]))
+push!(poly3, Vertex([0.5,-0.05]))
+push!(poly3, Vertex([0.1,0.1]))
+push!(poly3, Vertex([0.1,-0.1]))
 
-results = gh.phase3!(poly3, poly1)
+results = intersection(poly3, poly1)
+
 @test length(results) == 2
 @test length(results[1]) == 4
 @test length(results[2]) == 4
 
-#poly1 = Polygon()
-#push!(poly1, Vertex([0,1]))
-#push!(poly1, Vertex([1,1]))
-#push!(poly1, Vertex([1,0]))
-#push!(poly1, Vertex([0,0]))
+poly1 = Polygon()
+push!(poly1, Vertex([0,1]))
+push!(poly1, Vertex([1,1]))
+push!(poly1, Vertex([1,0]))
+push!(poly1, Vertex([0,0]))
 
-#poly2 = Polygon()
-#push!(poly2, Vertex([0.5,0.5]))
-#push!(poly2, Vertex([1.5,0.5]))
-#push!(poly2, Vertex([1.5,-0.5]))
-#push!(poly2, Vertex([0.5,-0.5]))
-#phase1!(poly1, poly2)
-#println(poly1)
-#println(poly2)
-
-#a = clip(poly2, poly1)
-#println(a)
+poly2 = Polygon()
+push!(poly2, Vertex([0.5,0.5]))
+push!(poly2, Vertex([1.5,0.5]))
+push!(poly2, Vertex([1.5,-0.5]))
+push!(poly2, Vertex([0.5,-0.5]))
+results = intersection(poly1, poly2)
+@test length(results) == 1
+@test length(results[1]) == 5
