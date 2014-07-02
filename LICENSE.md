@@ -1,4 +1,4 @@
-The GreinerHormann.jl package is licensed under the MIT "Expat" License:
+The PolygonClipping.jl package is licensed under the MIT "Expat" License:
 
 > Copyright (c) 2014: Steve Kelly.
 >
