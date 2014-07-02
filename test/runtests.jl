@@ -1,7 +1,7 @@
 #! /usr/bin/env julia
 
-using GreinerHormann
-gh = GreinerHormann
+using PolygonClipping
+pc = PolygonClipping
 using Base.Test
 
 # Test Doubly linked list
@@ -143,7 +143,7 @@ push!(poly3, Vertex([0.1,-0.1]))
 #test phase1
 @test length(poly1) == 4
 @test length(poly3) == 5
-gh.phase1!(poly3, poly1)
+pc.phase1!(poly3, poly1)
 @test length(poly1) == 8
 @test length(poly3) == 9
 intersects = 0
@@ -158,8 +158,8 @@ for p1 in poly1, p2 in poly3
 end
 @test intersects == 4 # make sure we found 4 intersections
 
-gh.phase2!(poly3, poly1)
-gh.phase2!(poly1, poly3)
+pc.phase2!(poly3, poly1)
+pc.phase2!(poly1, poly3)
 entries = 0
 for vert in poly1
     if vert.entry

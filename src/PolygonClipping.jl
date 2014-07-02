@@ -1,4 +1,4 @@
-module GreinerHormann
+module PolygonClipping
 
 import Base.show
 import Base.push!

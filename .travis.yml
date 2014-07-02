@@ -12,8 +12,8 @@ before_install:
   - sudo apt-get update -qq -y
   - sudo apt-get install libpcre3-dev julia -y
 script:
-  - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("GreinerHormann"))`); Pkg.pin("GreinerHormann"); Pkg.resolve()'
+  - julia -e 'Pkg.init(); run(`ln -s $(pwd()) $(Pkg.dir("PolygonClipping"))`); Pkg.pin("PolygonClipping"); Pkg.resolve()'
   - cd ./test
   - julia --code-coverage runtests.jl
 after_success:
-  - julia -e 'cd(Pkg.dir("GreinerHormann")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
+  - julia -e 'cd(Pkg.dir("PolygonClipping")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())'
