@@ -223,3 +223,29 @@ results = intersection(poly1, poly2)
 @test length(results) == 1
 @test length(results[1]) == 5
 
+
+# Issue 2
+circle = Polygon()
+x_max = 10
+y_max = 10.2
+circle_seg = 2*pi/100
+
+r = min(x_max, y_max)/2
+
+for i = 0:circle_seg:2*pi-circle_seg
+    push!(circle, Vertex([r*cos(i)+x_max/2, r*sin(i)+y_max/2]))
+end
+
+fill = Polygon()
+push!(fill, Vertex([-2.0,-2.0]))
+scan = [-1.0,11.0]
+for i = 0.5:9.5
+    for j in scan
+        push!(fill, Vertex([i,j]))
+    end
+    push!(fill, Vertex([i+1,scan[2]]))
+    reverse!(scan)
+end
+
+clip = intersection(fill, circle)
+
