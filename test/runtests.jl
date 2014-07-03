@@ -252,3 +252,28 @@ for p1 in polya, p2 in polyb
 end
 @test intersects == 4 # make sure we found 4 intersections
 
+polya = Polygon()
+push!(polya, Vertex([-0.5, 0]))
+push!(polya, Vertex([1.5, 0.0]))
+push!(polya, Vertex([1.5, 1]))
+push!(polya, Vertex([-0.5, 1]))
+
+polyb = Polygon()
+push!(polyb, Vertex([0, -0.5]))
+push!(polyb, Vertex([0, 1.5]))
+push!(polyb, Vertex([1, 1.5]))
+push!(polyb, Vertex([1, -0.5]))
+
+PolygonClipping.phase1!(polyb, polya)
+
+intersects = 0
+for p1 in polya, p2 in polyb
+    if p1.location == p2.location
+        @test is(p1.neighbor, p2)
+        @test is(p2.neighbor, p1)
+        @test p1.intersect
+        @test p2.intersect
+        intersects += 1
+    end
+end
+@test intersects == 4 # make sure we found 4 intersections
