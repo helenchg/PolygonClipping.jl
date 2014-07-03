@@ -149,20 +149,13 @@ function isinside(v::Vertex, poly::Polygon)
     return c
 end
 
-function isneighbor(sv::Vertex, cv::Vertex)
-    if (sv.neighbor != cv && sv.next.neighbor != cv &&
-        sv.neighbor != cv.next && sv.next.neighbor != cv.next)
-        return false
-    end
-    return true
-end
-
 function phase1!(subject::Polygon, clip::Polygon)
     sv = subject.start
     while true
         cv = clip.start
         while true
-            if !isneighbor(sv, cv)
+            if (sv.neighbor != cv && sv.next.neighbor != cv &&
+                sv.neighbor != cv.next && sv.next.neighbor != cv.next)
                 intersect, a, b = intersection(sv, sv.next, cv, cv.next)
                 if intersect
                     i1 = Vertex(sv, sv.next, a)
