@@ -9,17 +9,16 @@ export Vertex, Polygon, push!, intersection, isinside, show, unprocessed,
        VertexException, EdgeException, DegeneracyException, length
 
 type Vertex
-    location::Vector2{Float64}
-    next::Union(Vertex, Nothing)
-    prev::Union(Vertex, Nothing)
-    nextpoly::Union(Vertex, Nothing)
+    location::Vector2
+    next::Vertex
+    prev::Vertex
+    nextpoly::Vertex
     intersect::Bool
     entry::Bool
-    neighbor::Union(Vertex, Nothing)
+    neighbor::Vertex
     visited::Bool
 
-    Vertex(x) = new(Vector2(x), nothing, nothing, nothing, false, true, nothing, false)
-    Vertex(x, a::Vertex, b::Vertex) = new(Vector2(x), a, b, nothing, false, true, nothing, false)
+    Vertex() = new()
 end
 
 type VertexException <: Exception end
@@ -30,19 +29,19 @@ function show(io::IO, vert::Vertex)
     println("Vertex:")
     println("\tMem:", pointer_from_objref(vert))
     println("\tLocation:",vert.location)
-    println("\tNext:",pointer_from_objref(vert.next))
-    println("\tPrev:",pointer_from_objref(vert.prev))
-    println("\tNextPoly:",pointer_from_objref(vert.nextpoly))
-    println("\tNeighbor:",pointer_from_objref(vert.neighbor))
+    isdefined(vert,:next) ? println("\tNext:",pointer_from_objref(vert.next)):
+    isdefined(vert,:prev) ? println("\tPrev:",pointer_from_objref(vert.prev)):
+    isdefined(vert,:nextpoly) ? println("\tNextPoly:",pointer_from_objref(vert.nextpoly)):
+    isdefined(vert,:neighbor) ? println("\tNeighbor:",pointer_from_objref(vert.neighbor)):
     println("\tIntersect:",vert.intersect)
     println("\tEntry:",vert.entry)
     println("\tVisited:",vert.visited)
 end
 
 type Polygon
-    start::Union(Vertex, Nothing)
+    start::Vertex
 
-    Polygon() = new(nothing)
+    Polygon() = new()
 end
 
 Base.start(m::Polygon) = (m.start, false)
@@ -53,7 +52,7 @@ function Base.next(m::Polygon, state::(Vertex, Bool))
         return (state[1], (state[1].next, state[2]))
     end
 end
-Base.done(m::Polygon, state::(Vertex, Bool)) = (is(m.start, state[1]) && state[2])
+Base.done(m::Polygon, state::(Vertex, Bool)) = (state[2] && is(m.start, state[1]))
 
 function length(p::Polygon)
     n = 0
@@ -75,7 +74,7 @@ function show(io::IO, p::Polygon)
 end
 
 function push!(p::Polygon, v::Vertex)
-    if p.start == nothing
+    if !isdefined(p, :start)
         p.start = v
         v.prev = v
         v.next = v
@@ -87,21 +86,41 @@ function push!(p::Polygon, v::Vertex)
     end
 end
 
+function Vertex(x, a::Vertex, b::Vertex)
+    v = Vertex()
+    v.location = Vector2(x)
+    v.intersect = false
+    v.entry = true
+    v.visited = false
+    v.next = a
+    v.prev = b
+    return v
+end
+
+function Vertex(x)
+    v = Vertex()
+    v.location = Vector2(x)
+    v.intersect = false
+    v.entry = true
+    v.visited = false
+    return v
+end
+
+function Vertex(s::Vertex, c::Vertex, location::Vector2)
+    # Insert a vertex between s and c at location
+    v = Vertex(location)
+    v.next = c
+    v.prev = s
+    s.next = v
+    c.prev = v
+    return v
+end
+
 function Vertex(s::Vertex, c::Vertex, alpha::Float64)
     # Insert a vertex between s and c at alpha from s
     location = s.location + alpha*(c.location-s.location)
-    a = Vertex(location, c, s)
-    s.next = a
-    c.prev = a
-    return a
-end
-
-function Vertex(s::Vertex, c::Vertex, location::Vector2{Float64})
-    # Insert a vertex between s and c at location
-    a = Vertex(location, c, s)
-    s.next = a
-    c.prev = a
-    return a
+    v = Vertex(s, c, location)
+    return v
 end
 
 function unprocessed(p::Polygon)
@@ -149,13 +168,21 @@ function isinside(v::Vertex, poly::Polygon)
     return c
 end
 
+function isneighbor(sv, cv)
+    sv_neighbor = (isdefined(sv, :neighbor) && sv.neighbor != cv && sv.neighbor != cv.next) || !isdefined(sv, :neighbor)
+    svn_neighbor = (isdefined(sv.next, :neighbor) && sv.next.neighbor != cv && sv.next.neighbor != cv.next) || !isdefined(sv.next, :neighbor)
+    if sv_neighbor && svn_neighbor
+        return false
+    end
+    return true
+end
+
 function phase1!(subject::Polygon, clip::Polygon)
     sv = subject.start
     while true
         cv = clip.start
         while true
-            if (sv.neighbor != cv && sv.next.neighbor != cv &&
-                sv.neighbor != cv.next && sv.next.neighbor != cv.next)
+            if !isneighbor(sv, cv)
                 intersect, a, b = intersection(sv, sv.next, cv, cv.next)
                 if intersect
                     i1 = Vertex(sv, sv.next, a)
