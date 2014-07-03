@@ -225,27 +225,30 @@ results = intersection(poly1, poly2)
 
 
 # Issue 2
-circle = Polygon()
-x_max = 10
-y_max = 10.2
-circle_seg = 2*pi/100
 
-r = min(x_max, y_max)/2
+polya = Polygon()
+push!(polya, Vertex([-0.5, 0]))
+push!(polya, Vertex([1.5, 0.0]))
+push!(polya, Vertex([1.5, 1]))
+push!(polya, Vertex([-0.5, 1]))
 
-for i = 0:circle_seg:2*pi-circle_seg
-    push!(circle, Vertex([r*cos(i)+x_max/2, r*sin(i)+y_max/2]))
-end
+polyb = Polygon()
+push!(polyb, Vertex([0, -0.5]))
+push!(polyb, Vertex([0, 1.5]))
+push!(polyb, Vertex([1, 1.5]))
+push!(polyb, Vertex([1, -0.5]))
 
-fill = Polygon()
-push!(fill, Vertex([-2.0,-2.0]))
-scan = [-1.0,11.0]
-for i = 0.5:9.5
-    for j in scan
-        push!(fill, Vertex([i,j]))
+PolygonClipping.phase1!(polya, polyb)
+
+intersects = 0
+for p1 in polya, p2 in polyb
+    if p1.location == p2.location
+        @test is(p1.neighbor, p2)
+        @test is(p2.neighbor, p1)
+        @test p1.intersect
+        @test p2.intersect
+        intersects += 1
     end
-    push!(fill, Vertex([i+1,scan[2]]))
-    reverse!(scan)
 end
-
-clip = intersection(fill, circle)
+@test intersects == 4 # make sure we found 4 intersections
 
