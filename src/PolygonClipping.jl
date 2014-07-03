@@ -39,19 +39,6 @@ function show(io::IO, vert::Vertex)
     println("\tVisited:",vert.visited)
 end
 
-################################################################################
-#
-# Polygon:
-#   start
-#   finish
-#
-# Push!(Polygon, Vertex)
-#   Notes:
-#   For cleaner implmentation, the last Vertex always points to a vertex with
-#   the same location as the start vertex
-#
-################################################################################
-
 type Polygon
     start::Union(Vertex, Nothing)
 
