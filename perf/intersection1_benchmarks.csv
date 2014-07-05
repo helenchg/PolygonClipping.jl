@@ -1,2 +1,3 @@
 "Category","Benchmark","Iterations","TotalWall","AverageWall","MaxWall","MinWall","Timestamp","JuliaHash","CodeHash","OS","CPUCores"
 "Clipping","Intersection 1",10,11.609184944,1.1609184944000002,1.254254924,1.097620821,"2014-07-03 11:28:06","e460d50884e8b8cca6a670fa5c88ab68fa51ee14","b511b9ecd509e0aae2b99e3b149a65106b311f17","Linux",4
+"Clipping","Intersection 1",10,0.45795043099999994,0.045795043099999995,0.06171242,0.038665884,"2014-07-05 15:59:37","e460d50884e8b8cca6a670fa5c88ab68fa51ee14","be6b069ccb39f2dc1329031097b4f82ef4e54424","Linux",4
