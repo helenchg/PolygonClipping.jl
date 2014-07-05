@@ -17,9 +17,10 @@ type Vertex
     entry::Bool
     neighbor::Union(Vertex, Nothing)
     visited::Bool
+    alpha::Float64
 
-    Vertex(x) = new(Vector2(x), nothing, nothing, nothing, false, true, nothing, false)
-    Vertex(x, a::Vertex, b::Vertex) = new(Vector2(x), a, b, nothing, false, true, nothing, false)
+    Vertex(x) = new(Vector2(x), nothing, nothing, nothing, false, true, nothing, false, 0.0)
+    Vertex(x, a::Vertex, b::Vertex) = new(Vector2(x), a, b, nothing, false, true, nothing, false, 0.0)
 end
 
 type VertexException <: Exception end
@@ -91,6 +92,7 @@ function Vertex(s::Vertex, c::Vertex, alpha::Float64)
     # Insert a vertex between s and c at alpha from s
     location = s.location + alpha*(c.location-s.location)
     a = Vertex(location, c, s)
+    a.alpha = alpha
     s.next = a
     c.prev = a
     return a
@@ -151,30 +153,55 @@ end
 
 function phase1!(subject::Polygon, clip::Polygon)
     sv = subject.start
+    svn = sv.next
     while true
         cv = clip.start
+        cvn = cv
         while true
-            if (sv.neighbor != cv && sv.next.neighbor != cv &&
-                sv.neighbor != cv.next && sv.next.neighbor != cv.next)
-                intersect, a, b = intersection(sv, sv.next, cv, cv.next)
-                if intersect
-                    i1 = Vertex(sv, sv.next, a)
-                    i2 = Vertex(cv, cv.next, i1.location)
-                    i1.intersect = true
-                    i2.intersect = true
-                    i1.neighbor = i2
-                    i2.neighbor = i1
+            # Skip ahead to next non-inserted vertex
+            while true
+                cvn = cvn.next
+                if !cvn.intersect
+                    break
                 end
             end
-            if is(cv.next, clip.start)
+
+            intersect, a, b = intersection(sv, svn, cv, cvn)
+            if intersect
+                # Find where to insert vertices
+                av = sv
+                bv = cv
+                while av.alpha <= a && !is(av, svn)
+                    av = av.next
+                end
+                while bv.alpha <= b && !is(bv, cvn)
+                    bv = bv.next
+                end
+
+                i1 = Vertex(av.prev, av, a)
+                i2 = Vertex(bv.prev, bv, i1.location)
+                i2.alpha = b
+                i1.intersect = true
+                i2.intersect = true
+                i1.neighbor = i2
+                i2.neighbor = i1
+            end
+            if is(cvn, clip.start)
                 break
             end
-            cv = cv.next
+            cv = cvn
         end
-        if is(sv.next, subject.start)
+        if is(svn, subject.start)
             break
         end
-        sv = sv.next
+        sv = svn
+        # Skip ahead to next non-inserted vertex
+        while true
+            svn = svn.next
+            if !svn.intersect
+                break
+            end
+        end
     end
 end
 
