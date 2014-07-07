@@ -298,3 +298,25 @@ for p1 in polya, p2 in polyb
     end
 end
 @test intersects == 4 # make sure we found 4 intersections
+
+PolygonClipping.phase2!(polyb, polya)
+PolygonClipping.phase2!(polya, polyb)
+println(polya)
+println(polyb)
+
+println("Testing infill")
+polya = Polygon()
+push!(polya, Vertex([-0.5, 0]))
+push!(polya, Vertex([1.5, 0.0]))
+push!(polya, Vertex([1.5, 1]))
+push!(polya, Vertex([-0.5, 1]))
+
+polyb = Polygon()
+push!(polyb, Vertex([0, -0.5]))
+push!(polyb, Vertex([0, 1.5]))
+push!(polyb, Vertex([1, 1.5]))
+push!(polyb, Vertex([1, -0.5]))
+println(polya)
+println(polyb)
+fill = infill(polya, polyb)
+println(fill)

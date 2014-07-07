@@ -6,7 +6,7 @@ import Base.length
 using ImmutableArrays
 
 export Vertex, Polygon, push!, intersection, isinside, show, unprocessed,
-       VertexException, EdgeException, DegeneracyException, length, remove
+       VertexException, EdgeException, DegeneracyException, length, remove, infill
 
 type Vertex
     location::Vector2{Float64}
@@ -288,6 +288,67 @@ function intersection(subject::Polygon, clip::Polygon)
             else
                 current = current.neighbor
                 current.visited = true
+            end
+        end
+        numpoly = numpoly + 1
+    end
+    return results
+end
+
+function infill(subject::Polygon, clip::Polygon)
+    phase1!(subject, clip)
+
+    phase2!(subject, clip)
+    phase2!(clip, subject)
+
+    println(clip)
+    println(subject)
+    results = Polygon[]
+    numpoly = 1
+    while unprocessed(subject)
+        current = subject.start
+        while true
+            if current.intersect && !current.visited
+                current.visited = true
+                push!(results, Polygon())
+                push!(results[numpoly], Vertex(current.location))
+                break
+            end
+            current.visited = true
+            current = current.next
+        end
+        start = current.location
+        crossings = 1 # count first intersection
+        while true
+            if current.entry
+                while true
+                    current = current.next
+                    push!(results[numpoly], Vertex(current.location))
+                    current.visited = true
+                    if current.intersect
+                        crossings += 1
+                        break
+                    end
+                end
+            else
+                while true
+                    current = current.prev
+                    push!(results[numpoly], Vertex(current.location))
+                    current.visited = true
+                    if current.intersect
+                        crossings += 1
+                        break
+                    end
+                end
+            end
+            if current.visited && current.intersect
+                break
+            end
+            current = current.neighbor
+            current.visited = true
+            if crossings == 4
+                current.entry = !current.entry
+                crossings = 0
             end
         end
         numpoly = numpoly + 1
