@@ -126,6 +126,27 @@ poly1.start.next.intersect = true
 poly1.start.next.visited = true
 @test unprocessed(poly1) == false
 
+println("Testing remove vertices")
+poly1 = Polygon()
+vert1 = Vertex([0,1])
+push!(poly1, vert1)
+@test length(poly1) == 1
+@test is(poly1.start, vert1)
+remove(vert1, poly1)
+@test length(poly1) == 0
+@test is(poly1.start, nothing)
+@test is(vert1.next, nothing)
+@test is(vert1.prev, nothing)
+push!(poly1, vert1)
+vert2 = Vertex([1,1])
+push!(poly1, vert2)
+push!(poly1, Vertex([1,0]))
+push!(poly1, Vertex([0,0]))
+@test length(poly1) == 4
+remove(vert1, poly1)
+@test length(poly1) == 3
+@test is(poly1.start, vert2)
+
 # test clipping
 println("Testing clipping...")
 poly1 = Polygon()

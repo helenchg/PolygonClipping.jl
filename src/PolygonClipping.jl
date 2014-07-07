@@ -6,7 +6,7 @@ import Base.length
 using ImmutableArrays
 
 export Vertex, Polygon, push!, intersection, isinside, show, unprocessed,
-       VertexException, EdgeException, DegeneracyException, length
+       VertexException, EdgeException, DegeneracyException, length, remove
 
 type Vertex
     location::Vector2{Float64}
@@ -55,6 +55,7 @@ function Base.next(m::Polygon, state::(Vertex, Bool))
     end
 end
 Base.done(m::Polygon, state::(Vertex, Bool)) = (is(m.start, state[1]) && state[2])
+Base.done(m::Polygon, state::(Nothing, Bool)) = true
 
 function length(p::Polygon)
     n = 0
@@ -113,6 +114,24 @@ function unprocessed(p::Polygon)
         end
     end
     return false
+end
+
+function remove(v::Vertex, poly::Polygon)
+    if is(v, poly.start)
+        if is(v.next, v)
+            poly.start = nothing
+            v.next = nothing
+            v.prev = nothing
+            return
+        else
+            poly.start = v.next
+        end
+    end
+    v.next.prev = v.prev
+    v.prev.next = v.next
+    v.next = nothing
+    v.prev = nothing
+    return
 end
 
 function isinside(v::Vertex, poly::Polygon)
