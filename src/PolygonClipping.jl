@@ -89,6 +89,16 @@ function push!(p::Polygon, v::Vertex)
     end
 end
 
+function Vertex(s::Vertex, c::Vertex, alpha::Float64)
+    # Insert a vertex between s and c at alpha from s
+    location = s.location + alpha*(c.location-s.location)
+    a = Vertex(location, c, s)
+    a.alpha = alpha
+    s.next = a
+    c.prev = a
+    return a
+end
+
 function Vertex(s::Vertex, c::Vertex, location::Vector2{Float64})
     # Insert a vertex between s and c at location
     a = Vertex(location, c, s)
@@ -187,10 +197,8 @@ function phase1!(subject::Polygon, clip::Polygon)
                     bv = bv.next
                 end
 
-                location = sv.location + a*(svn.location-sv.location)
-                i1 = Vertex(av.prev, av, location)
-                i2 = Vertex(bv.prev, bv, location)
-                i1.alpha = a
+                i1 = Vertex(av.prev, av, a)
+                i2 = Vertex(bv.prev, bv, i1.location)
                 i2.alpha = b
                 i1.intersect = true
                 i2.intersect = true
