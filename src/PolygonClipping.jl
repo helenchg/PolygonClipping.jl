@@ -254,14 +254,14 @@ function intersection(subject::Polygon, clip::Polygon)
         current = subject.start
         while true
             if current.intersect && !current.visited
+                current.visited = true
+                push!(results, Polygon())
+                push!(results[numpoly], Vertex(current.location))
                 break
             end
             current.visited = true
             current = current.next
         end
-        current.visited = true
-        push!(results, Polygon())
-        push!(results[numpoly], Vertex(current.location))
         start = current.location
         while true
             if current.entry
