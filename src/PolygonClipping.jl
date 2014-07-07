@@ -197,8 +197,10 @@ function phase1!(subject::Polygon, clip::Polygon)
                     bv = bv.next
                 end
 
-                i1 = Vertex(av.prev, av, a)
-                i2 = Vertex(bv.prev, bv, i1.location)
+                location = sv.location + a*(svn.location-sv.location)
+                i1 = Vertex(av.prev, av, location)
+                i2 = Vertex(bv.prev, bv, location)
+                i1.alpha = a
                 i2.alpha = b
                 i1.intersect = true
                 i2.intersect = true
