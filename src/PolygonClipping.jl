@@ -303,8 +303,6 @@ function infill(subject::Polygon, clip::Polygon)
     phase2!(subject, clip)
     phase2!(clip, subject)
 
-    println(clip)
-    println(subject)
     results = Polygon[]
     numpoly = 1
     while unprocessed(subject)
@@ -314,6 +312,7 @@ function infill(subject::Polygon, clip::Polygon)
                 current.visited = true
                 push!(results, Polygon())
                 push!(results[numpoly], Vertex(current.location))
+                #current = current.neighbor
                 break
             end
             current.visited = true
@@ -321,14 +320,14 @@ function infill(subject::Polygon, clip::Polygon)
         end
         start = current.location
         crossings = 1 # count first intersection
-        while true
+        traversing = true
+        while traversing
             if current.entry
                 while true
                     current = current.next
                     push!(results[numpoly], Vertex(current.location))
                     current.visited = true
                     if current.intersect
-                        crossings += 1
                         break
                     end
                 end
@@ -338,16 +337,21 @@ function infill(subject::Polygon, clip::Polygon)
                     push!(results[numpoly], Vertex(current.location))
                     current.visited = true
                     if current.intersect
-                        crossings += 1
                         break
                     end
                 end
             end
-            if current.visited && current.intersect
-                break
+            vert = results[numpoly].start
+            while vert.next != results[numpoly].start
+                if current.location == vert.location
+                    traversing = false
+                    break
+                end
+                vert = vert.next
             end
             current = current.neighbor
             current.visited = true
+            crossings = crossings + 1
             if crossings == 4
                 current.entry = !current.entry
                 crossings = 0
