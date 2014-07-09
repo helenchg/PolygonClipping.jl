@@ -307,16 +307,28 @@ function infill(subject::Polygon, clip::Polygon)
     numpoly = 1
     while unprocessed(subject)
         current = subject.start
+        nonintersections = 1
         while true
-            if current.intersect && !current.visited
-                current.visited = true
-                push!(results, Polygon())
-                push!(results[numpoly], Vertex(current.location))
-                #current = current.neighbor
-                break
+            if current.intersect
+                if !current.visited
+                    current.visited = true
+                    push!(results, Polygon())
+                    newvert = Vertex(current.location)
+                    newvert.intersect = true
+                    push!(results[numpoly], newvert)
+                    #current = current.neighbor
+                    break
+                end
+            else
+                nonintersections += 1
             end
             current.visited = true
             current = current.next
+        end
+        # we are going down the right-hand side of an intersection so our jogs are flipped
+        flipped = false
+        if nonintersections % 3 == 0
+            flipped = true
         end
         start = current.location
         crossings = 1 # count first intersection
@@ -325,36 +337,50 @@ function infill(subject::Polygon, clip::Polygon)
             if current.entry
                 while true
                     current = current.next
-                    push!(results[numpoly], Vertex(current.location))
+                    newvert = Vertex(current.location)
+                    push!(results[numpoly], newvert)
                     current.visited = true
                     if current.intersect
+                        newvert.intersect = true
                         break
                     end
                 end
             else
                 while true
                     current = current.prev
-                    push!(results[numpoly], Vertex(current.location))
+                    newvert = Vertex(current.location)
+                    push!(results[numpoly], newvert)
                     current.visited = true
                     if current.intersect
+                        newvert.intersect = true
                         break
                     end
                 end
+            end
+            current = current.neighbor
+            current.visited = true
+            crossings = crossings + 1
+            if flipped && crossings == 2
+                current.entry = !current.entry
+            end
+            if !flipped && crossings == 4
+                current.entry = !current.entry
+                crossings = 0
             end
             vert = results[numpoly].start
             while vert.next != results[numpoly].start
                 if current.location == vert.location
                     traversing = false
+                    remove(results[numpoly].start.prev, results[numpoly])
+                    vert = results[numpoly].start.prev
+                    while !vert.intersect
+                        vert_prev = vert.prev
+                        remove(vert, results[numpoly])
+                        vert = vert_prev
+                    end
                     break
                 end
                 vert = vert.next
-            end
-            current = current.neighbor
-            current.visited = true
-            crossings = crossings + 1
-            if crossings == 4
-                current.entry = !current.entry
-                crossings = 0
             end
         end
         numpoly = numpoly + 1
