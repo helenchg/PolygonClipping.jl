@@ -357,6 +357,18 @@ function infill(subject::Polygon, clip::Polygon)
                     end
                 end
             end
+            if current.neighbor.visited && current.intersect
+                traversing = false
+                # remove vertices that we inserted while traversing
+                remove(results[numpoly].start.prev, results[numpoly])
+                vert = results[numpoly].start.prev
+                while !vert.intersect
+                    vert_prev = vert.prev
+                    remove(vert, results[numpoly])
+                    vert = vert_prev
+                end
+                break
+            end
             current = current.neighbor
             current.visited = true
             crossings = crossings + 1
@@ -366,21 +378,6 @@ function infill(subject::Polygon, clip::Polygon)
             if !flipped && crossings == 4
                 current.entry = !current.entry
                 crossings = 0
-            end
-            vert = results[numpoly].start
-            while vert.next != results[numpoly].start
-                if current.location == vert.location
-                    traversing = false
-                    remove(results[numpoly].start.prev, results[numpoly])
-                    vert = results[numpoly].start.prev
-                    while !vert.intersect
-                        vert_prev = vert.prev
-                        remove(vert, results[numpoly])
-                        vert = vert_prev
-                    end
-                    break
-                end
-                vert = vert.next
             end
         end
         numpoly = numpoly + 1
