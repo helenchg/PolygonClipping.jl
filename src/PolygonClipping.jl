@@ -298,6 +298,9 @@ function intersection(subject::Polygon, clip::Polygon)
 end
 
 function infill(subject::Polygon, clip::Polygon)
+    if subject.start == nothing || clip.start == nothing
+        return
+    end
     phase1!(subject, clip)
 
     phase2!(subject, clip)
