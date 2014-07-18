@@ -3,6 +3,7 @@
 using PolygonClipping
 pc = PolygonClipping
 using Base.Test
+using Lint
 
 # Test Doubly linked list
 println("Testing Polygon Structure...")
@@ -324,3 +325,7 @@ println(polya)
 println(polyb)
 fill = infill(polya, polyb)
 println(fill)
+
+# run lint
+println("Running Lint...")
+lintpkg("PolygonClipping")
