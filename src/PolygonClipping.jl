@@ -266,7 +266,7 @@ function intersection(subject::Polygon, clip::Polygon)
             current.visited = true
             current = current.next
         end
-        start = current.location
+        start = current
         while true
             if current.entry
                 while true
@@ -287,7 +287,7 @@ function intersection(subject::Polygon, clip::Polygon)
                     end
                 end
             end
-            if current.location == start
+            if current.neighbor === start
                 break
             else
                 current = current.neighbor
