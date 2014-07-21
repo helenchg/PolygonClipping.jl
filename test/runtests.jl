@@ -8,7 +8,7 @@ using Lint
 # Test Doubly linked list
 println("Testing Polygon Structure...")
 poly = Polygon()
-vert1 = Vertex([1,2])
+vert1 = Vertex(1,2)
 push!(poly, vert1)
 for i = 1:10
     push!(poly, Vertex(rand(2)))
@@ -30,8 +30,8 @@ for i = 1:10
 end
 
 println("Testing vertex constructors...")
-vert1 = Vertex([0,0])
-vert2 = Vertex([2,1])
+vert1 = Vertex(0,0)
+vert2 = Vertex(2,1)
 poly = Polygon()
 push!(poly, vert1)
 push!(poly, vert2)
@@ -46,66 +46,66 @@ a = Vertex(poly.start, poly.start.next, 0.25)
 # test isinside method
 println("Testing point in polygon...")
 poly1 = Polygon()
-push!(poly1, Vertex([0,0]))
-push!(poly1, Vertex([1,0]))
-push!(poly1, Vertex([1,1]))
-push!(poly1, Vertex([0,1]))
-@test isinside(Vertex([0.5,0.5]), poly1) == true
-@test isinside(Vertex([-0.5,0.5]), poly1) == false
-@test_throws VertexException isinside(Vertex([0,0]), poly1)
-@test_throws VertexException isinside(Vertex([1,0]), poly1)
-@test_throws EdgeException isinside(Vertex([0.5,0.0]), poly1)
+push!(poly1, Vertex(0,0))
+push!(poly1, Vertex(1,0))
+push!(poly1, Vertex(1,1))
+push!(poly1, Vertex(0,1))
+@test isinside(Vertex(0.5,0.5), poly1) == true
+@test isinside(Vertex(-0.5,0.5), poly1) == false
+@test_throws VertexException isinside(Vertex(0,0), poly1)
+@test_throws VertexException isinside(Vertex(1,0), poly1)
+@test_throws EdgeException isinside(Vertex(0.5,0.0), poly1)
 for i = 1:100
     @test isinside(Vertex(rand(2)), poly1) == true
 end
 
 # add non-convexity
-push!(poly1, Vertex([0.9,0.5]))
-@test isinside(Vertex([0.9,0.9]), poly1) == true
-@test isinside(Vertex([0.9,0.9]), poly1) == true
-@test isinside(Vertex([0.99,0.1]), poly1) == true
-@test isinside(Vertex([0.99,0.5]), poly1) == true
-@test isinside(Vertex([0.9,0.1]), poly1) == true
+push!(poly1, Vertex(0.9,0.5))
+@test isinside(Vertex(0.9,0.9), poly1) == true
+@test isinside(Vertex(0.9,0.9), poly1) == true
+@test isinside(Vertex(0.99,0.1), poly1) == true
+@test isinside(Vertex(0.99,0.5), poly1) == true
+@test isinside(Vertex(0.9,0.1), poly1) == true
 
 # add self-intersection
-push!(poly1, Vertex([1.1, 0.25]))
-@test isinside(Vertex([1.09,0.25]), poly1) == true
-@test isinside(Vertex([1.09,0.26]), poly1) == true
-@test isinside(Vertex([0.9,0.25]), poly1) == false
-@test isinside(Vertex([0.9,0.05]), poly1) == true
-@test isinside(Vertex([0.9,0.9]), poly1) == true
+push!(poly1, Vertex(1.1, 0.25))
+@test isinside(Vertex(1.09,0.25), poly1) == true
+@test isinside(Vertex(1.09,0.26), poly1) == true
+@test isinside(Vertex(0.9,0.25), poly1) == false
+@test isinside(Vertex(0.9,0.05), poly1) == true
+@test isinside(Vertex(0.9,0.9), poly1) == true
 
 
 println("Testing line intersection method...")
-@test (intersection(Vertex([0,0]), Vertex([1,1]), Vertex([1,0]), Vertex([0,1]))
+@test (intersection(Vertex(0,0), Vertex(1,1), Vertex(1,0), Vertex(0,1))
         == (true, 0.5, 0.5))
-@test (intersection(Vertex([0,0]), Vertex([1,1]), Vertex([1/2,0]), Vertex([0,1/2]))
+@test (intersection(Vertex(0,0), Vertex(1,1), Vertex(1/2,0), Vertex(0,1/2))
         == (true, 0.25, 0.5))
-@test (intersection(Vertex([0,0]), Vertex([2,2]), Vertex([1/2,0]), Vertex([0,1/2]))
+@test (intersection(Vertex(0,0), Vertex(2,2), Vertex(1/2,0), Vertex(0,1/2))
         == (true, 0.125, 0.5))
-@test (intersection(Vertex([0,0]), Vertex([0,1]), Vertex([1,0]), Vertex([1,1]))
+@test (intersection(Vertex(0,0), Vertex(0,1), Vertex(1,0), Vertex(1,1))
         == (false, 0, 0))
-@test (intersection(Vertex([0.5,0]), Vertex([0.5,1]), Vertex([0,0.5]), Vertex([1,0.5]))
+@test (intersection(Vertex(0.5,0), Vertex(0.5,1), Vertex(0,0.5), Vertex(1,0.5))
         == (true, 0.5, 0.5))
-@test (intersection(Vertex([0,0]), Vertex([1,1]), Vertex([0,0]), Vertex([-1,-1]))
+@test (intersection(Vertex(0,0), Vertex(1,1), Vertex(0,0), Vertex(-1,-1))
         == (false, 0, 0))
-@test (intersection(Vertex([0,0]), Vertex([0,0]), Vertex([1,1]), Vertex([1,1]))
+@test (intersection(Vertex(0,0), Vertex(0,0), Vertex(1,1), Vertex(1,1))
         == (false, 0, 0))
-@test (intersection(Vertex([0,0]), Vertex([1,0]), Vertex([0.25,0.5]), Vertex([0.25,-0.5]))
+@test (intersection(Vertex(0,0), Vertex(1,0), Vertex(0.25,0.5), Vertex(0.25,-0.5))
         == (true, 0.25, 0.5))
-@test (intersection(Vertex([1,0]), Vertex([0,0]), Vertex([0.25,0.5]), Vertex([0.25,-0.5]))
+@test (intersection(Vertex(1,0), Vertex(0,0), Vertex(0.25,0.5), Vertex(0.25,-0.5))
         == (true, 0.75, 0.5))
-@test (intersection(Vertex([0,0]), Vertex([1,0]), Vertex([0.25,-0.5]), Vertex([0.25,0.25]))
+@test (intersection(Vertex(0,0), Vertex(1,0), Vertex(0.25,-0.5), Vertex(0.25,0.25))
         == (true, 0.25, 2/3))
-@test (intersection(Vertex([0,0]), Vertex([1,0]), Vertex([0.25,0.25]), Vertex([0.25,-0.5]))
+@test (intersection(Vertex(0,0), Vertex(1,0), Vertex(0.25,0.25), Vertex(0.25,-0.5))
         == (true, 0.25, 1/3))
-@test (intersection(Vertex([0,0]), Vertex([1,0]), Vertex([1.5,0.5]), Vertex([1.5,-0.5]))
+@test (intersection(Vertex(0,0), Vertex(1,0), Vertex(1.5,0.5), Vertex(1.5,-0.5))
         == (false, 0, 0))
-@test_throws DegeneracyException intersection(Vertex([0,0]), Vertex([1,0]), Vertex([0.5,0]), Vertex([0.5,1.0]))
+@test_throws DegeneracyException intersection(Vertex(0,0), Vertex(1,0), Vertex(0.5,0), Vertex(0.5,1.0))
 
 println("Testing Vertex insertion")
-vert1 = Vertex([0,0])
-vert2 = Vertex([1,1])
+vert1 = Vertex(0,0)
+vert2 = Vertex(1,1)
 vert3 = Vertex(vert1, vert2, 0.25)
 @test vert3.next === vert2
 @test vert3.prev === vert1
@@ -117,10 +117,10 @@ vert3 = Vertex(vert2, vert1, 0.25)
 
 println("Testing unprocessed")
 poly1 = Polygon()
-push!(poly1, Vertex([0,0]))
-push!(poly1, Vertex([1,0]))
-push!(poly1, Vertex([1,1]))
-push!(poly1, Vertex([0,1]))
+push!(poly1, Vertex(0,0))
+push!(poly1, Vertex(1,0))
+push!(poly1, Vertex(1,1))
+push!(poly1, Vertex(0,1))
 @test unprocessed(poly1) == false
 poly1.start.next.intersect = true
 @test unprocessed(poly1) == true
@@ -129,7 +129,7 @@ poly1.start.next.visited = true
 
 println("Testing remove vertices")
 poly1 = Polygon()
-vert1 = Vertex([0,1])
+vert1 = Vertex(0,1)
 push!(poly1, vert1)
 @test length(poly1) == 1
 @test is(poly1.start, vert1)
@@ -139,10 +139,10 @@ remove(vert1, poly1)
 @test is(vert1.next, nothing)
 @test is(vert1.prev, nothing)
 push!(poly1, vert1)
-vert2 = Vertex([1,1])
+vert2 = Vertex(1,1)
 push!(poly1, vert2)
-push!(poly1, Vertex([1,0]))
-push!(poly1, Vertex([0,0]))
+push!(poly1, Vertex(1,0))
+push!(poly1, Vertex(0,0))
 @test length(poly1) == 4
 remove(vert1, poly1)
 @test length(poly1) == 3
@@ -151,16 +151,16 @@ remove(vert1, poly1)
 # test clipping
 println("Testing clipping...")
 poly1 = Polygon()
-push!(poly1, Vertex([0,1]))
-push!(poly1, Vertex([1,1]))
-push!(poly1, Vertex([1,0]))
-push!(poly1, Vertex([0,0]))
+push!(poly1, Vertex(0,1))
+push!(poly1, Vertex(1,1))
+push!(poly1, Vertex(1,0))
+push!(poly1, Vertex(0,0))
 poly3 = Polygon()
-push!(poly3, Vertex([0.9,-0.1]))
-push!(poly3, Vertex([0.9,0.1]))
-push!(poly3, Vertex([0.5,-0.05]))
-push!(poly3, Vertex([0.1,0.1]))
-push!(poly3, Vertex([0.1,-0.1]))
+push!(poly3, Vertex(0.9,-0.1))
+push!(poly3, Vertex(0.9,0.1))
+push!(poly3, Vertex(0.5,-0.05))
+push!(poly3, Vertex(0.1,0.1))
+push!(poly3, Vertex(0.1,-0.1))
 
 #test phase1
 @test length(poly1) == 4
@@ -198,16 +198,16 @@ end
 @test entries == 5
 
 poly1 = Polygon()
-push!(poly1, Vertex([0,1]))
-push!(poly1, Vertex([1,1]))
-push!(poly1, Vertex([1,0]))
-push!(poly1, Vertex([0,0]))
+push!(poly1, Vertex(0,1))
+push!(poly1, Vertex(1,1))
+push!(poly1, Vertex(1,0))
+push!(poly1, Vertex(0,0))
 poly3 = Polygon()
-push!(poly3, Vertex([0.9,-0.1]))
-push!(poly3, Vertex([0.9,0.1]))
-push!(poly3, Vertex([0.5,-0.05]))
-push!(poly3, Vertex([0.1,0.1]))
-push!(poly3, Vertex([0.1,-0.1]))
+push!(poly3, Vertex(0.9,-0.1))
+push!(poly3, Vertex(0.9,0.1))
+push!(poly3, Vertex(0.5,-0.05))
+push!(poly3, Vertex(0.1,0.1))
+push!(poly3, Vertex(0.1,-0.1))
 
 results = intersection(poly3, poly1)
 
@@ -216,31 +216,31 @@ results = intersection(poly3, poly1)
 @test length(results[2]) == 4
 
 poly1 = Polygon()
-push!(poly1, Vertex([0,1]))
-push!(poly1, Vertex([1,1]))
-push!(poly1, Vertex([1,0]))
-push!(poly1, Vertex([0,0]))
+push!(poly1, Vertex(0,1))
+push!(poly1, Vertex(1,1))
+push!(poly1, Vertex(1,0))
+push!(poly1, Vertex(0,0))
 
 poly2 = Polygon()
-push!(poly2, Vertex([0.5,0.5]))
-push!(poly2, Vertex([1.5,0.5]))
-push!(poly2, Vertex([1.5,-0.5]))
-push!(poly2, Vertex([0.5,-0.5]))
+push!(poly2, Vertex(0.5,0.5))
+push!(poly2, Vertex(1.5,0.5))
+push!(poly2, Vertex(1.5,-0.5))
+push!(poly2, Vertex(0.5,-0.5))
 results = intersection(poly1, poly2)
 @test length(results) == 1
 @test length(results[1]) == 5
 
 poly1 = Polygon()
-push!(poly1, Vertex([1,0]))
-push!(poly1, Vertex([1,1]))
-push!(poly1, Vertex([0,1]))
-push!(poly1, Vertex([0,0]))
+push!(poly1, Vertex(1,0))
+push!(poly1, Vertex(1,1))
+push!(poly1, Vertex(0,1))
+push!(poly1, Vertex(0,0))
 
 poly2 = Polygon()
-push!(poly2, Vertex([0.5,0.5]))
-push!(poly2, Vertex([1.5,0.5]))
-push!(poly2, Vertex([1.5,-0.5]))
-push!(poly2, Vertex([0.5,-0.5]))
+push!(poly2, Vertex(0.5,0.5))
+push!(poly2, Vertex(1.5,0.5))
+push!(poly2, Vertex(1.5,-0.5))
+push!(poly2, Vertex(0.5,-0.5))
 results = intersection(poly1, poly2)
 @test length(results) == 1
 @test length(results[1]) == 5
@@ -249,16 +249,16 @@ results = intersection(poly1, poly2)
 # Issue 2
 
 polya = Polygon()
-push!(polya, Vertex([-0.5, 0]))
-push!(polya, Vertex([1.5, 0.0]))
-push!(polya, Vertex([1.5, 1]))
-push!(polya, Vertex([-0.5, 1]))
+push!(polya, Vertex(-0.5, 0))
+push!(polya, Vertex(1.5, 0.0))
+push!(polya, Vertex(1.5, 1))
+push!(polya, Vertex(-0.5, 1))
 
 polyb = Polygon()
-push!(polyb, Vertex([0, -0.5]))
-push!(polyb, Vertex([0, 1.5]))
-push!(polyb, Vertex([1, 1.5]))
-push!(polyb, Vertex([1, -0.5]))
+push!(polyb, Vertex(0, -0.5))
+push!(polyb, Vertex(0, 1.5))
+push!(polyb, Vertex(1, 1.5))
+push!(polyb, Vertex(1, -0.5))
 
 PolygonClipping.phase1!(polya, polyb)
 
@@ -275,16 +275,16 @@ end
 @test intersects == 4 # make sure we found 4 intersections
 
 polya = Polygon()
-push!(polya, Vertex([-0.5, 0]))
-push!(polya, Vertex([1.5, 0.0]))
-push!(polya, Vertex([1.5, 1]))
-push!(polya, Vertex([-0.5, 1]))
+push!(polya, Vertex(-0.5, 0))
+push!(polya, Vertex(1.5, 0.0))
+push!(polya, Vertex(1.5, 1))
+push!(polya, Vertex(-0.5, 1))
 
 polyb = Polygon()
-push!(polyb, Vertex([0, -0.5]))
-push!(polyb, Vertex([0, 1.5]))
-push!(polyb, Vertex([1, 1.5]))
-push!(polyb, Vertex([1, -0.5]))
+push!(polyb, Vertex(0, -0.5))
+push!(polyb, Vertex(0, 1.5))
+push!(polyb, Vertex(1, 1.5))
+push!(polyb, Vertex(1, -0.5))
 
 PolygonClipping.phase1!(polyb, polya)
 
@@ -302,29 +302,24 @@ end
 
 PolygonClipping.phase2!(polyb, polya)
 PolygonClipping.phase2!(polya, polyb)
-println(polya)
-println(polyb)
 
 println("Testing infill")
 polya = Polygon()
-push!(polya, Vertex([0.0, 1.0]))
-push!(polya, Vertex([1.0, 1.0]))
-push!(polya, Vertex([1.0, 0.0]))
-push!(polya, Vertex([0.0, 0.0]))
+push!(polya, Vertex(0.0, 1.0))
+push!(polya, Vertex(1.0, 1.0))
+push!(polya, Vertex(1.0, 0.0))
+push!(polya, Vertex(0.0, 0.0))
 
 polyb = Polygon()
-push!(polyb, Vertex([-0.15, -0.5]))
-push!(polyb, Vertex([-0.15, 1.5]))
-push!(polyb, Vertex([0.15, 1.5]))
-push!(polyb, Vertex([0.15, -0.2]))
-push!(polyb, Vertex([0.3, -0.2]))
-push!(polyb, Vertex([0.3, 1.5]))
-push!(polyb, Vertex([0.45, 1.5]))
-push!(polyb, Vertex([0.45, -0.5]))
-println(polya)
-println(polyb)
+push!(polyb, Vertex(-0.15, -0.5))
+push!(polyb, Vertex(-0.15, 1.5))
+push!(polyb, Vertex(0.15, 1.5))
+push!(polyb, Vertex(0.15, -0.2))
+push!(polyb, Vertex(0.3, -0.2))
+push!(polyb, Vertex(0.3, 1.5))
+push!(polyb, Vertex(0.45, 1.5))
+push!(polyb, Vertex(0.45, -0.5))
 fill = infill(polya, polyb)
-println(fill)
 
 # run lint
 println("Running Lint...")

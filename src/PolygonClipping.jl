@@ -20,7 +20,8 @@ type Vertex
     alpha::Float64
 
     Vertex(x) = new(Vector2(x), nothing, nothing, nothing, false, true, nothing, false, 0.0)
-    Vertex{T<:Real}(x::T,y::T) = new(Vector2(x,y), nothing, nothing, nothing, false, true, nothing, false, 0.0)
+    Vertex(x::Float64,y::Float64) = new(Vector2(x,y), nothing, nothing, nothing, false, true, nothing, false, 0.0)
+    Vertex(x::Real,y::Real) = new(Vector2(convert(Float64,x),convert(Float64,y)), nothing, nothing, nothing, false, true, nothing, false, 0.0)
     Vertex(x::Vector2, a::Vertex, b::Vertex) = new(x, a, b, nothing, false, true, nothing, false, 0.0)
 end
 
