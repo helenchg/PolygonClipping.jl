@@ -254,26 +254,29 @@ function intersection(subject::Polygon, clip::Polygon)
 
     results = Polygon[]
     numpoly = 1
-    while unprocessed(subject)
-        current = subject.start
+    search_start = subject.start
+    while true
+        current = search_start
         while true
-            if current.intersect && !current.visited
-                current.visited = true
+            if current.intersect
                 push!(results, Polygon())
                 push!(results[numpoly], Vertex(current.location))
                 break
             end
-            current.visited = true
             current = current.next
+            if current == subject.start
+                return results
+            end
         end
         start = current
+        first_change = true
         while true
             if current.entry
                 while true
                     current = current.next
                     push!(results[numpoly], Vertex(current.location))
-                    current.visited = true
                     if current.intersect
+                        current.intersect = false
                         break
                     end
                 end
@@ -281,18 +284,20 @@ function intersection(subject::Polygon, clip::Polygon)
                 while true
                     current = current.prev
                     push!(results[numpoly], Vertex(current.location))
-                    current.visited = true
                     if current.intersect
+                        current.intersect = false
                         break
                     end
                 end
             end
-            if current.neighbor === start
+            if current.neighbor == start
                 break
-            else
-                current = current.neighbor
-                current.visited = true
+            elseif first_change
+                first_change = false
+                search_start = current
             end
+            current = current.neighbor
+            current.intersect = false
         end
         numpoly = numpoly + 1
     end
