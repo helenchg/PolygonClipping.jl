@@ -20,7 +20,8 @@ type Vertex
     alpha::Float64
 
     Vertex(x) = new(Vector2(x), nothing, nothing, nothing, false, true, nothing, false, 0.0)
-    Vertex(x, a::Vertex, b::Vertex) = new(Vector2(x), a, b, nothing, false, true, nothing, false, 0.0)
+    Vertex{T<:Real}(x::T,y::T) = new(Vector2(x,y), nothing, nothing, nothing, false, true, nothing, false, 0.0)
+    Vertex(x::Vector2, a::Vertex, b::Vertex) = new(x, a, b, nothing, false, true, nothing, false, 0.0)
 end
 
 type VertexException <: Exception end
