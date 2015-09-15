@@ -49,15 +49,15 @@ type Polygon
 end
 
 Base.start(m::Polygon) = (m.start, false)
-function Base.next(m::Polygon, state::(Vertex, Bool))
+function Base.next(m::Polygon, state::Tuple{Vertex, Bool})
     if is(m.start, state[1])
         return (state[1], (state[1].next, true))
     else
         return (state[1], (state[1].next, state[2]))
     end
 end
-Base.done(m::Polygon, state::(Vertex, Bool)) = (is(m.start, state[1]) && state[2])
-Base.done(m::Polygon, state::(Nothing, Bool)) = true
+Base.done(m::Polygon, state::Tuple{Vertex, Bool}) = (is(m.start, state[1]) && state[2])
+Base.done(m::Polygon, state::Tuple{Nothing, Bool}) = true
 
 function length(p::Polygon)
     n = 0
