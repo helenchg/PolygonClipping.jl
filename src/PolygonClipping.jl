@@ -149,6 +149,11 @@ function isinside(v::Vertex, poly::Polygon)
     return c
 end
 
+function phase1!(p1,p2,p3)
+    phase1!(p1,p2)
+    phase1!(p1,p3)
+end
+
 function phase1!(subject::Polygon, clip::Polygon)
     sv = subject.start
     svn = sv.next
