@@ -1,9 +1,6 @@
-#! /usr/bin/env julia
-
 using PolygonClipping
 pc = PolygonClipping
 using Base.Test
-using Lint
 
 # Test Doubly linked list
 println("Testing Polygon Structure...")

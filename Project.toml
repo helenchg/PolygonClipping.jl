@@ -1,0 +1,5 @@
+name = "PolygonClipping"
+uuid = "d17c5b03-546c-522d-928b-4f908f8820a1"
+
+[deps]
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"

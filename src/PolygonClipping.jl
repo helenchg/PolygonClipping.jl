@@ -3,31 +3,31 @@ module PolygonClipping
 import Base.show
 import Base.push!
 import Base.length
-using ImmutableArrays
+using StaticArrays
 
 export Vertex, Polygon, push!, intersection, isinside, show, unprocessed,
        VertexException, EdgeException, DegeneracyException, length, remove, infill
 
-type Vertex
-    location::Vector2{Float64}
-    next::Union(Vertex, Nothing)
-    prev::Union(Vertex, Nothing)
-    nextpoly::Union(Vertex, Nothing)
+mutable struct Vertex
+    location::SVector{2,Float64}
+    next::Union{Vertex, Nothing}
+    prev::Union{Vertex, Nothing}
+    nextpoly::Union{Vertex, Nothing}
     intersect::Bool
     entry::Bool
-    neighbor::Union(Vertex, Nothing)
+    neighbor::Union{Vertex, Nothing}
     visited::Bool
     alpha::Float64
 
-    Vertex(x) = new(Vector2(x), nothing, nothing, nothing, false, true, nothing, false, 0.0)
-    Vertex(x::Float64,y::Float64) = new(Vector2(x,y), nothing, nothing, nothing, false, true, nothing, false, 0.0)
-    Vertex(x::Real,y::Real) = new(Vector2(convert(Float64,x),convert(Float64,y)), nothing, nothing, nothing, false, true, nothing, false, 0.0)
-    Vertex(x::Vector2, a::Vertex, b::Vertex) = new(x, a, b, nothing, false, true, nothing, false, 0.0)
 end
 
-type VertexException <: Exception end
-type EdgeException <: Exception end
-type DegeneracyException <: Exception end
+Vertex(x) = Vertex(x, nothing, nothing, nothing, false, true, nothing, false, 0.0)
+Vertex(x::Real,y::Real) = new(SVector(x,y), nothing, nothing, nothing, false, true, nothing, false, 0.0)
+Vertex(x::AbstractVector, a::Vertex, b::Vertex) = new(x, a, b, nothing, false, true, nothing, false, 0.0)
+
+struct VertexException <: Exception end
+struct EdgeException <: Exception end
+struct DegeneracyException <: Exception end
 
 function show(io::IO, vert::Vertex)
     println("Vertex:")
@@ -42,8 +42,8 @@ function show(io::IO, vert::Vertex)
     println("\tVisited:",vert.visited)
 end
 
-type Polygon
-    start::Union(Vertex, Nothing)
+mutable struct Polygon
+    start::Union{Vertex, Nothing}
 
     Polygon() = new(nothing)
 end
